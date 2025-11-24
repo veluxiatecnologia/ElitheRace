@@ -1,0 +1,36 @@
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+// const { initDb } = require('./db');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Initialize Database
+// initDb(); // Deprecated: Using Supabase
+
+// Routes
+// const authRoutes = require('./routes/authRoutes'); // Deprecated: Client uses Supabase Auth directly
+const eventRoutes = require('./routes/eventRoutes');
+const peTemplateRoutes = require('./routes/peTemplateRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+
+// app.use('/api/auth', authRoutes); // Deprecated: Client uses Supabase Auth directly
+app.use('/api/events', eventRoutes);
+app.use('/api/pe-templates', peTemplateRoutes);
+app.use('/api/settings', settingsRoutes);
+
+app.get('/', (req, res) => {
+    res.send('Elithe Racing API is running');
+});
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
