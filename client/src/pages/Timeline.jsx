@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/Button';
+import API_URL from '../config/api';
 import './Timeline.css';
 
 const Timeline = () => {
@@ -19,7 +20,7 @@ const Timeline = () => {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
-            const response = await fetch('http://localhost:3000/api/gallery/timeline', {
+            const response = await fetch(`${API_URL}/api/gallery/timeline`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

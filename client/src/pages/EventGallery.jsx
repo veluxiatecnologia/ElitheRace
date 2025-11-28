@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/Button';
 import PhotoModal from '../components/PhotoModal';
 import { toast } from 'react-hot-toast';
+import API_URL from '../config/api';
 import './EventGallery.css';
 
 const EventGallery = () => {
@@ -40,7 +41,7 @@ const EventGallery = () => {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
-            const response = await fetch(`http://localhost:3000/api/gallery/events/${eventId}/photos`, {
+            const response = await fetch(`${API_URL}/api/gallery/events/${eventId}/photos`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -96,7 +97,7 @@ const EventGallery = () => {
 
             // 3. Save metadata to Backend
             const { data: { session } } = await supabase.auth.getSession();
-            const response = await fetch(`http://localhost:3000/api/gallery/events/${eventId}/photos`, {
+            const response = await fetch(`${API_URL}/api/gallery/events/${eventId}/photos`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

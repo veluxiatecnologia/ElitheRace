@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import Button from './Button';
 import { toast } from 'react-hot-toast';
+import API_URL from '../config/api';
 import './PhotoModal.css';
 
 const PhotoModal = ({ photo, onClose, onUpdate }) => {
@@ -44,7 +45,7 @@ const PhotoModal = ({ photo, onClose, onUpdate }) => {
     const fetchComments = async () => {
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const response = await fetch(`http://localhost:3000/api/gallery/photos/${photo.id}/comments`, {
+            const response = await fetch(`${API_URL}/api/gallery/photos/${photo.id}/comments`, {
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`
                 }
@@ -70,7 +71,7 @@ const PhotoModal = ({ photo, onClose, onUpdate }) => {
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const response = await fetch(`http://localhost:3000/api/gallery/photos/${photo.id}/like`, {
+            const response = await fetch(`${API_URL}/api/gallery/photos/${photo.id}/like`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ const PhotoModal = ({ photo, onClose, onUpdate }) => {
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const response = await fetch(`http://localhost:3000/api/gallery/photos/${photo.id}/comments`, {
+            const response = await fetch(`${API_URL}/api/gallery/photos/${photo.id}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +147,7 @@ const PhotoModal = ({ photo, onClose, onUpdate }) => {
         const toastId = toast.loading('Excluindo foto...');
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const response = await fetch(`http://localhost:3000/api/gallery/photos/${photo.id}`, {
+            const response = await fetch(`${API_URL}/api/gallery/photos/${photo.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
