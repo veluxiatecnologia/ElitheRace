@@ -10,6 +10,7 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 import Badge from '../components/Badge';
 import QRCodeDisplay from '../components/QRCodeDisplay';
 import toast from 'react-hot-toast';
+import API_URL from '../config/api';
 import './Home.css';
 
 const Home = () => {
@@ -40,7 +41,7 @@ const Home = () => {
 
     const fetchEvent = async () => {
         try {
-            const res = await fetch('/api/events/active');
+            const res = await fetch(`${API_URL}/api/events/active');
             const data = await res.json();
             if (data.message) {
                 setEvent(null);
@@ -62,14 +63,14 @@ const Home = () => {
     const getAuthHeader = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         return {
-            'Authorization': `Bearer ${session?.access_token}`
+            'Authorization': `Bearer ${ session?.access_token }`
         };
     };
 
     const checkStatus = async (eventId) => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`/api/events/${eventId}/status`, { headers });
+            const res = await fetch(`${ API_URL } / api / events / ${ eventId } / status`, { headers });
 
             if (res.status === 403 || res.status === 401) {
                 await logout();
@@ -95,7 +96,7 @@ const Home = () => {
         const confirmPromise = new Promise(async (resolve, reject) => {
             try {
                 const headers = await getAuthHeader();
-                const res = await fetch(`/api/events/${event.id}/attend`, {
+                const res = await fetch(`${ API_URL } / api / events / ${ event.id } / attend`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ const Home = () => {
         toast.promise(confirmPromise, {
             loading: 'Confirmando presença...',
             success: 'Presença confirmada com sucesso! 🏍️',
-            error: (err) => `Erro: ${err.message}`
+            error: (err) => `Erro: ${ err.message }`
         });
 
         try {

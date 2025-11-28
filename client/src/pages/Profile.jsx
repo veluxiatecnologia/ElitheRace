@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import API_URL from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import { Link } from 'react-router-dom';
@@ -72,7 +73,7 @@ const Profile = () => {
             setEditData(profileInfo);
 
             const headers = await getAuthHeader();
-            const resHistory = await fetch('/api/events/history', { headers });
+            const resHistory = await fetch(`${API_URL}/api/events/history', { headers });
             const historyData = await resHistory.json();
             setHistory(historyData);
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_URL from '../config/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -38,9 +39,9 @@ const Analytics = () => {
 
                 // Fetch all data in parallel
                 const [statsRes, top10Res, birthdaysRes] = await Promise.all([
-                    fetch('/api/admin/dashboard/stats', { headers }),
-                    fetch('/api/admin/dashboard/top10', { headers }),
-                    fetch('/api/admin/dashboard/birthdays', { headers })
+                    fetch(`${API_URL}/api/admin/dashboard/stats', { headers }),
+                    fetch(`${API_URL}/api/admin/dashboard/top10', { headers }),
+                    fetch(`${API_URL}/api/admin/dashboard/birthdays', { headers })
                 ]);
 
                 if (!statsRes.ok || !top10Res.ok || !birthdaysRes.ok) {
