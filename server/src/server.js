@@ -20,11 +20,17 @@ app.use(express.json());
 const eventRoutes = require('./routes/eventRoutes');
 const peTemplateRoutes = require('./routes/peTemplateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const checkinRoutes = require('./routes/checkinRoutes');
+const galleryRoutes = require('./routes/galleryRoutes');
 
 // app.use('/api/auth', authRoutes); // Deprecated: Client uses Supabase Auth directly
 app.use('/api/events', eventRoutes);
 app.use('/api/pe-templates', peTemplateRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/admin/dashboard', dashboardRoutes);
+app.use('/api/checkin', checkinRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 app.get('/', (req, res) => {
     res.send('Elithe Racing API is running');

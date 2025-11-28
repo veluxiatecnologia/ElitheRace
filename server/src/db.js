@@ -135,10 +135,13 @@ const db = {
 
   confirmations: {
     create: async (conf) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('confirmations')
-        .insert(conf);
+        .insert(conf)
+        .select()
+        .single();
       if (error) throw error;
+      return data;
     },
     findByEventAndUser: async (eventId, userId) => {
       const { data, error } = await supabase
@@ -148,6 +151,16 @@ const db = {
         .eq('usuario_id', userId)
         .single();
       if (error) return null;
+      return data;
+    },
+    update: async (id, updates) => {
+      const { data, error } = await supabase
+        .from('confirmations')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
       return data;
     },
     findByEventId: async (eventId) => {
@@ -202,6 +215,93 @@ const db = {
         .from('pe_templates')
         .delete()
         .eq('id', id);
+      if (error) throw error;
+    }
+  },
+
+  gallery: {
+    // Photos
+    createPhoto: async (photo) => {
+      const { data, error } = await supabase
+        .from('photos')
+        .insert(photo)
+        .select('*, profiles(nome, avatar_url)')
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    getPhotosByEvent: async (eventId) => {
+      const { data, error } = await supabase
+        .from('photos')
+        .select(`
+          *,
+          profiles (nome, avatar_url),
+          likes (user_id),
+          comments (id)
+        `)
+        .eq('evento_id', eventId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data to include counts and isLiked (will be handled in controller or frontend)
+      return data.map(photo => ({
+        ...photo,
+        likeCount: photo.likes ? photo.likes.length : 0,
+        commentCount: photo.comments ? photo.comments.length : 0,
+        likes: photo.likes // Keep likes to check if user liked
+      }));
+    },
+    deletePhoto: async (id) => {
+      // Also delete from storage (will be handled in controller)
+      const { error } = await supabase
+        .from('photos')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+
+    // Likes
+    toggleLike: async (photoId, userId) => {
+      const { data: existing } = await supabase
+        .from('likes')
+        .select('id')
+        .eq('photo_id', photoId)
+        .eq('user_id', userId)
+        .single();
+
+      if (existing) {
+        const { error } = await supabase.from('likes').delete().eq('id', existing.id);
+        if (error) throw error;
+        return { liked: false };
+      } else {
+        const { error } = await supabase.from('likes').insert({ photo_id: photoId, user_id: userId });
+        if (error) throw error;
+        return { liked: true };
+      }
+    },
+
+    // Comments
+    addComment: async (comment) => {
+      const { data, error } = await supabase
+        .from('comments')
+        .insert(comment)
+        .select('*, profiles(nome, avatar_url)')
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    getCommentsByPhoto: async (photoId) => {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*, profiles(nome, avatar_url)')
+        .eq('photo_id', photoId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    deleteComment: async (id) => {
+      const { error } = await supabase.from('comments').delete().eq('id', id);
       if (error) throw error;
     }
   }

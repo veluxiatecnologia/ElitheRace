@@ -1,0 +1,159 @@
+.modern-input-wrapper {
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+}
+
+.modern-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.modern-input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25em;
+    color: var(--color-text-muted);
+    z-index: 2;
+    transition: color var(--transition-base);
+    pointer-events: none;
+}
+
+.modern-input-wrapper:focus-within .modern-input-icon {
+    color: var(--color-gold);
+}
+
+
+.modern-input-field {
+    width: 100%;
+    padding: 20px 16px 10px 16px;
+    background: var(--color-carbon-lighter);
+    border: 2px solid var(--color-text-dimmed);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    transition: all var(--transition-base);
+    outline: none;
+}
+
+.modern-input-with-icon .modern-input-field {
+    padding-left: 48px;
+}
+
+.modern-input-field:focus {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 3px var(--color-gold-light);
+}
+
+.modern-input-field::placeholder {
+    color: var(--color-text-dimmed);
+}
+
+.modern-input-label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    pointer-events: none;
+    transition: all var(--transition-base);
+    background: transparent;
+    padding: 0 4px;
+    z-index: 1;
+}
+
+.modern-input-with-icon .modern-input-label {
+    left: 48px;
+}
+
+.modern-input-label-floating {
+    top: 8px;
+    transform: translateY(0);
+    font-size: var(--font-size-xs);
+    color: var(--color-gold);
+    background: var(--color-carbon-lighter);
+    left: 12px !important;
+}
+
+/* Force floating label for date/time inputs */
+input[type="date"]~.modern-input-label,
+input[type="time"]~.modern-input-label,
+input[type="datetime-local"]~.modern-input-label {
+    top: 8px;
+    transform: translateY(0);
+    font-size: var(--font-size-xs);
+    color: var(--color-gold);
+    background: var(--color-carbon-lighter);
+    left: 12px !important;
+}
+
+.modern-input-required {
+    color: var(--color-error);
+    margin-left: 2px;
+}
+
+.modern-input-toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25em;
+    padding: 4px;
+    opacity: 0.6;
+    transition: opacity var(--transition-base);
+}
+
+.modern-input-toggle-password:hover {
+    opacity: 1;
+}
+
+.modern-input-error-text {
+    display: block;
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    margin-left: 16px;
+}
+
+.modern-input-helper-text {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin-top: var(--spacing-xs);
+    margin-left: 16px;
+}
+
+/* Error State */
+.modern-input-error .modern-input-field {
+    border-color: var(--color-error);
+}
+
+.modern-input-error .modern-input-field:focus {
+    box-shadow: 0 0 0 3px var(--color-error-light);
+}
+
+.modern-input-error .modern-input-label-floating {
+    color: var(--color-error);
+}
+
+/* Disabled State */
+.modern-input-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .modern-input-field {
+        font-size: 16px;
+        /* Prevent zoom on iOS */
+        min-height: 44px;
+    }
+}

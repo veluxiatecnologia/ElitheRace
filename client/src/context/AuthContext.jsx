@@ -54,8 +54,44 @@ export const AuthProvider = ({ children }) => {
         if (error) throw error;
     };
 
+    const signInWithGoogle = async () => {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/`
+            }
+        });
+        if (error) throw error;
+        return data;
+    };
+
+    const requestPasswordReset = async (email) => {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`
+        });
+        if (error) throw error;
+        return data;
+    };
+
+    const updatePassword = async (newPassword) => {
+        const { data, error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+        if (error) throw error;
+        return data;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            register,
+            logout,
+            loading,
+            signInWithGoogle,
+            requestPasswordReset,
+            updatePassword
+        }}>
             {!loading && children}
         </AuthContext.Provider>
     );

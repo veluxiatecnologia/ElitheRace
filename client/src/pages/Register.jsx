@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import FormCard from '../components/FormCard';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import './Register.css';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -11,7 +15,9 @@ const Register = () => {
         moto_atual: ''
     });
     const [error, setError] = useState('');
-    const { register } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [loadingGoogle, setLoadingGoogle] = useState(false);
+    const { register, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -20,38 +26,154 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
+
         try {
             await register(formData);
             navigate('/');
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Erro ao criar conta');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleSignup = async () => {
+        setError('');
+        setLoadingGoogle(true);
+
+        try {
+            await signInWithGoogle();
+        } catch (err) {
+            setError(err.message || 'Erro ao cadastrar com Google');
+            setLoadingGoogle(false);
         }
     };
 
     return (
-        <div className="container" style={{ maxWidth: '500px', marginTop: '50px' }}>
-            <div className="card">
-                <h2 className="text-center mb-4">Cadastro</h2>
-                {error && <div className="text-red mb-4 text-center">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <label>Nome Completo</label>
-                    <input name="nome" value={formData.nome} onChange={handleChange} required />
+        <div className="register-page">
+            <div className="register-background"></div>
 
-                    <label>Data de Nascimento</label>
-                    <input type="date" name="data_nascimento" value={formData.data_nascimento} onChange={handleChange} required />
+            <FormCard
+                title="Criar Conta"
+                subtitle="Junte-se à família Elithe Racing"
+                maxWidth={500}
+            >
+                <div className="register-logo">
+                    🏍️
+                </div>
 
-                    <label>Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                {error && (
+                    <div className="register-error animate-shake">
+                        <span className="register-error-icon">⚠️</span>
+                        {error}
+                    </div>
+                )}
 
-                    <label>Senha</label>
-                    <input type="password" name="senha" value={formData.senha} onChange={handleChange} required />
+                {/* Google OAuth */}
+                <button
+                    onClick={handleGoogleSignup}
+                    disabled={loadingGoogle}
+                    className="google-btn"
+                >
+                    {loadingGoogle ? (
+                        <>
+                            <span className="google-btn-spinner"></span>
+                            Redirecionando...
+                        </>
+                    ) : (
+                        <>
+                            <span>🔍</span>
+                            Cadastrar com Google
+                        </>
+                    )}
+                </button>
 
-                    <label>Moto Atual (Modelo/Cor)</label>
-                    <input name="moto_atual" value={formData.moto_atual} onChange={handleChange} placeholder="Ex: Honda CB 500X Vermelha" />
+                <div className="register-separator">
+                    <span>ou preencha o formulário</span>
+                </div>
 
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Cadastrar</button>
+                {/* Registration Form */}
+                <form onSubmit={handleSubmit} className="register-form">
+                    <Input
+                        label="Nome Completo"
+                        type="text"
+                        name="nome"
+                        value={formData.nome}
+                        onChange={handleChange}
+                        icon="👤"
+                        required
+                        disabled={loading}
+                        helperText="Como você gostaria de ser chamado"
+                    />
+
+                    <Input
+                        label="Data de Nascimento"
+                        type="date"
+                        name="data_nascimento"
+                        value={formData.data_nascimento}
+                        onChange={handleChange}
+                        icon="📅"
+                        required
+                        disabled={loading}
+                    />
+
+                    <Input
+                        label="Email"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        icon="📧"
+                        required
+                        disabled={loading}
+                        helperText="Usaremos para suas confirmações"
+                    />
+
+                    <Input
+                        label="Senha"
+                        type="password"
+                        name="senha"
+                        value={formData.senha}
+                        onChange={handleChange}
+                        icon="🔒"
+                        required
+                        disabled={loading}
+                        helperText="Mínimo 6 caracteres"
+                    />
+
+                    <Input
+                        label="Moto Atual"
+                        type="text"
+                        name="moto_atual"
+                        value={formData.moto_atual}
+                        onChange={handleChange}
+                        icon="🏍️"
+                        required
+                        disabled={loading}
+                        helperText="Ex: Honda CBR 600"
+                    />
+
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="large"
+                        fullWidth
+                        loading={loading}
+                    >
+                        Criar Conta
+                    </Button>
                 </form>
-            </div>
+
+                {/* Login Link */}
+                <div className="register-login">
+                    <span>Já tem uma conta? </span>
+                    <Link to="/login" className="register-login-link">
+                        Faça login
+                    </Link>
+                </div>
+            </FormCard>
         </div>
     );
 };

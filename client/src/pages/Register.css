@@ -1,0 +1,147 @@
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.register-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        var(--gradient-carbon);
+    z-index: 0;
+}
+
+.register-page>* {
+    position: relative;
+    z-index: 1;
+}
+
+.register-logo {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    animation: pulse 3s infinite;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+.register-error {
+    background: var(--color-error-light);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.register-error-icon {
+    font-size: 1.2em;
+}
+
+.google-btn {
+    width: 100%;
+    background: white;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin-bottom: var(--spacing-lg);
+    min-height: 48px;
+}
+
+.google-btn:hover:not(:disabled) {
+    background: #f8f9fa;
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.google-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.google-btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #333;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.register-separator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.register-separator::before,
+.register-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-text-dimmed);
+}
+
+.register-form {
+    margin-bottom: var(--spacing-lg);
+}
+
+.register-login {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--glass-border);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.register-login-link {
+    color: var(--color-gold);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color var(--transition-base);
+    margin-left: var(--spacing-xs);
+}
+
+.register-login-link:hover {
+    color: var(--color-gold-hover);
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .register-page {
+        padding: var(--spacing-md);
+    }
+
+    .register-logo {
+        font-size: 2.5rem;
+    }
+}

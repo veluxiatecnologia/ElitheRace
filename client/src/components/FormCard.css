@@ -1,0 +1,52 @@
+.form-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    animation: slideUp var(--transition-base);
+}
+
+.form-card-centered {
+    margin: var(--spacing-xl) auto;
+}
+
+.form-card-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-card-title {
+    color: var(--color-gold);
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin: 0 0 var(--spacing-sm) 0;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.form-card-subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-card {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md);
+        width: calc(100% - var(--spacing-md) * 2);
+    }
+
+    .form-card-title {
+        font-size: var(--font-size-2xl);
+    }
+}

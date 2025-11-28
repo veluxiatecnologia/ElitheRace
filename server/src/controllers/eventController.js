@@ -57,7 +57,8 @@ exports.createEvent = async (req, res) => {
                     evento_id: eventId,
                     nome: pe.nome_pe, // Fixed field name from nome_pe to nome based on db.js/sql
                     localizacao: pe.link_maps_pe, // Mapping link_maps_pe to localizacao
-                    horario: pe.horario_pe
+                    horario: pe.horario_pe,
+                    destino_pe_id: pe.destino_pe_id || null
                 });
             }
         }
@@ -95,7 +96,8 @@ exports.updateEvent = async (req, res) => {
                     evento_id: id,
                     nome: pe.nome_pe,
                     localizacao: pe.link_maps_pe,
-                    horario: pe.horario_pe
+                    horario: pe.horario_pe,
+                    destino_pe_id: pe.destino_pe_id || null
                 });
             }
         }

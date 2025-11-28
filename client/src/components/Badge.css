@@ -1,0 +1,88 @@
+.modern-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+/* Sizes */
+.modern-badge-small {
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
+}
+
+.modern-badge-medium {
+    padding: 6px 12px;
+    font-size: var(--font-size-sm);
+}
+
+.modern-badge-large {
+    padding: 8px 16px;
+    font-size: var(--font-size-base);
+}
+
+/* Variants */
+.modern-badge-default {
+    background: var(--color-carbon-lighter);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-text-dimmed);
+}
+
+.modern-badge-success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+}
+
+.modern-badge-warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
+
+.modern-badge-error {
+    background: var(--color-error-light);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+}
+
+.modern-badge-info {
+    background: var(--color-info-light);
+    color: var(--color-info);
+    border: 1px solid var(--color-info);
+}
+
+.modern-badge-gold {
+    background: var(--color-gold-light);
+    color: var(--color-gold);
+    border: 1px solid var(--color-gold);
+}
+
+/* Dot Variant */
+.modern-badge-dot {
+    padding: 0;
+    width: 8px;
+    height: 8px;
+    border: none;
+}
+
+.modern-badge-dot.modern-badge-small {
+    width: 6px;
+    height: 6px;
+}
+
+.modern-badge-dot.modern-badge-large {
+    width: 10px;
+    height: 10px;
+}
+
+/* Icon */
+.modern-badge-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.1em;
+}

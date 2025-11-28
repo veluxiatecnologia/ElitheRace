@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import FormCard from '../components/FormCard';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSkeleton from '../components/LoadingSkeleton';
+import Badge from '../components/Badge';
+import QRCodeDisplay from '../components/QRCodeDisplay';
+import toast from 'react-hot-toast';
+import './Home.css';
 
 const Home = () => {
     const [event, setEvent] = useState(null);
@@ -13,10 +22,8 @@ const Home = () => {
     const [result, setResult] = useState(null);
     const { user, logout } = useAuth();
 
-    // Função para formatar data sem problemas de timezone
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        // Parseia a data como local, não UTC
         const [year, month, day] = dateString.split('T')[0].split('-');
         const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
         return date.toLocaleDateString('pt-BR', {
@@ -46,6 +53,7 @@ const Home = () => {
             }
         } catch (error) {
             console.error(error);
+            toast.error('Erro ao carregar evento');
         } finally {
             setLoading(false);
         }
@@ -77,141 +85,150 @@ const Home = () => {
 
     const handleConfirm = async (e) => {
         e.preventDefault();
+
+        if (!pe) {
+            toast.error('Selecione um Ponto de Encontro');
+            return;
+        }
+
         setConfirming(true);
-        try {
-            const headers = await getAuthHeader();
-            const res = await fetch(`/api/events/${event.id}/attend`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...headers
-                },
-                body: JSON.stringify({ moto_dia: moto, pe_escolhido: pe })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setResult(data);
-                setStatus({ confirmed: true, data: { moto_dia: moto, pe_escolhido: pe } });
-            } else {
-                alert(data.error);
+        const confirmPromise = new Promise(async (resolve, reject) => {
+            try {
+                const headers = await getAuthHeader();
+                const res = await fetch(`/api/events/${event.id}/attend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...headers
+                    },
+                    body: JSON.stringify({ moto_dia: moto, pe_escolhido: pe })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    setResult(data);
+                    setStatus({ confirmed: true, data: { moto_dia: moto, pe_escolhido: pe } });
+                    resolve(data);
+                } else {
+                    reject(new Error(data.error));
+                }
+            } catch (error) {
+                reject(error);
             }
+        });
+
+        toast.promise(confirmPromise, {
+            loading: 'Confirmando presença...',
+            success: 'Presença confirmada com sucesso! 🏍️',
+            error: (err) => `Erro: ${err.message}`
+        });
+
+        try {
+            await confirmPromise;
         } catch (error) {
-            alert('Erro ao confirmar presença');
+            // Error handled by toast
         } finally {
             setConfirming(false);
         }
     };
 
-    if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-            <div className="text-gold" style={{ fontSize: '20px' }}>Carregando...</div>
-        </div>
-    );
+    if (loading) return <LoadingSpinner fullPage text="Carregando evento..." />;
 
     if (!event) {
         return (
-            <div style={{ background: '#0a0a0a', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                <div className="card text-center" style={{ maxWidth: '500px', padding: '60px 40px' }}>
-                    <div style={{ fontSize: '80px', marginBottom: '20px' }}>🏍️</div>
-                    <h2 className="text-white" style={{ fontSize: '28px', marginBottom: '16px' }}>Nenhum Rolê Ativo</h2>
-                    <p className="text-gray-400" style={{ fontSize: '16px' }}>Em breve teremos novidades! Fique ligado nas redes sociais do clube.</p>
+            <div className="home-page">
+                <div className="empty-state">
+                    <div className="empty-icon">🏍️</div>
+                    <h2 className="text-gold mb-4">Nenhum Rolê Ativo</h2>
+                    <p className="text-muted">Em breve teremos novidades! Fique ligado nas redes sociais do clube.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div style={{ background: '#0a0a0a', minHeight: '100vh', paddingBottom: '60px' }}>
-            <div className="container mx-auto px-4 py-6" style={{ maxWidth: '900px' }}>
-
-                {/* Banner */}
-                {event.banner_url && (
-                    <div style={{
-                        width: '100%',
-                        height: '300px',
-                        overflow: 'hidden',
-                        borderRadius: '16px',
-                        marginBottom: '24px',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
-                    }}>
-                        <img src={event.banner_url} alt="Banner do Evento" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                )}
-
-                {/* Event Header Card */}
-                <div className="card mb-6" style={{ textAlign: 'center', padding: '32px' }}>
-                    <h1 className="text-gold" style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '12px' }}>{event.nome}</h1>
-                    <div style={{ fontSize: '20px', color: '#999', marginBottom: '8px' }}>
-                        📅 {formatDate(event.data)}
+        <div className="home-page">
+            <div className="home-container">
+                {/* Hero Section */}
+                <div className="home-hero">
+                    {event.banner_url ? (
+                        <img src={event.banner_url} alt={event.nome} className="home-hero-image" />
+                    ) : (
+                        <div className="home-hero-image" style={{ background: 'var(--gradient-carbon)' }}></div>
+                    )}
+                    <div className="home-hero-overlay">
+                        <Badge variant="gold" className="mb-2">Próximo Evento</Badge>
+                        <h1 className="home-hero-title">{event.nome}</h1>
+                        <div className="home-hero-date">
+                            <span>📅</span> {formatDate(event.data)}
+                        </div>
                     </div>
                 </div>
 
-                {/* Event Details Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                    {/* Destination */}
-                    <div className="card">
-                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>📍</div>
-                        <h3 className="text-red" style={{ fontSize: '14px', textTransform: 'uppercase', marginBottom: '8px' }}>Destino</h3>
-                        <p className="text-white" style={{ fontSize: '16px', marginBottom: '12px' }}>{event.destino}</p>
-                        {event.link_maps_destino && (
-                            <a href={event.link_maps_destino} target="_blank" rel="noopener noreferrer" className="text-gold" style={{ fontSize: '14px', textDecoration: 'none' }}>
-                                Ver no Maps →
-                            </a>
+                {/* Content Grid - Only visible to logged users */}
+                {user && (
+                    <div className="home-grid">
+                        {/* Destination Card */}
+                        <FormCard className="info-card" maxWidth={800} centered={false}>
+                            <div className="info-card-header">
+                                <div className="info-card-icon">📍</div>
+                                <h3 className="info-card-title">Destino</h3>
+                            </div>
+                            <div className="info-card-content">
+                                <p className="text-xl font-bold mb-2">{event.destino}</p>
+                                {event.link_maps_destino && (
+                                    <a href={event.link_maps_destino} target="_blank" rel="noopener noreferrer" className="btn modern-btn-ghost modern-btn-small inline-flex items-center gap-2">
+                                        Ver no Maps 🗺️
+                                    </a>
+                                )}
+                            </div>
+                        </FormCard>
+
+                        {/* Observations Card */}
+                        {event.observacoes && (
+                            <FormCard className="info-card" maxWidth={800} centered={false}>
+                                <div className="info-card-header">
+                                    <div className="info-card-icon">📝</div>
+                                    <h3 className="info-card-title">Observações</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    <p style={{ whiteSpace: 'pre-line' }}>{event.observacoes}</p>
+                                </div>
+                            </FormCard>
+                        )}
+
+                        {/* Pedagios Card */}
+                        {event.pedagios && (
+                            <FormCard className="info-card" maxWidth={800} centered={false}>
+                                <div className="info-card-header">
+                                    <div className="info-card-icon">💰</div>
+                                    <h3 className="info-card-title">Pedágios</h3>
+                                </div>
+                                <div className="info-card-content">
+                                    <p style={{ whiteSpace: 'pre-line' }}>{event.pedagios}</p>
+                                </div>
+                            </FormCard>
                         )}
                     </div>
-
-                    {/* Pedagios */}
-                    {event.pedagios && (
-                        <div className="card">
-                            <div style={{ fontSize: '32px', marginBottom: '12px' }}>💰</div>
-                            <h3 className="text-gold" style={{ fontSize: '14px', textTransform: 'uppercase', marginBottom: '8px' }}>Pedágios</h3>
-                            <p className="text-white" style={{ fontSize: '16px', whiteSpace: 'pre-line' }}>{event.pedagios}</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Observations */}
-                {event.observacoes && (
-                    <div className="card mb-6">
-                        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <span style={{ fontSize: '28px' }}>📝</span>
-                            <h3 className="text-gold" style={{ fontSize: '18px' }}>Observações</h3>
-                        </div>
-                        <p className="text-white" style={{ fontSize: '15px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{event.observacoes}</p>
-                    </div>
                 )}
 
-                {/* PEs Section - Only visible when logged in */}
+                {/* PEs Section */}
                 {user && event.pes && event.pes.length > 0 && (
-                    <div className="card mb-6">
-                        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <span style={{ fontSize: '28px' }}>🅿️</span>
-                            <h3 className="text-red" style={{ fontSize: '20px', fontWeight: 'bold' }}>Pontos de Encontro</h3>
-                        </div>
-                        <div style={{ display: 'grid', gap: '12px' }}>
+                    <div className="mb-6">
+                        <h2 className="text-gold mb-4 flex items-center gap-2">
+                            <span>🅿️</span> Pontos de Encontro
+                        </h2>
+                        <div className="pe-list">
                             {event.pes.map(p => (
-                                <div key={p.id} style={{
-                                    background: '#1a1a1a',
-                                    padding: '16px',
-                                    borderRadius: '12px',
-                                    border: '1px solid #333',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    flexWrap: 'wrap',
-                                    gap: '12px'
-                                }}>
-                                    <div>
-                                        <div className="text-white" style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '4px' }}>
-                                            {p.nome}
-                                        </div>
-                                        <div className="text-gray-400" style={{ fontSize: '14px' }}>
-                                            🕒 {p.horario}
+                                <div key={p.id} className="pe-item">
+                                    <div className="pe-info">
+                                        <h4>{p.nome}</h4>
+                                        <div className="pe-time">
+                                            <span>🕒</span> {p.horario}
                                         </div>
                                     </div>
                                     {p.localizacao && (
-                                        <a href={p.localizacao} target="_blank" rel="noopener noreferrer" className="text-gold" style={{ fontSize: '14px', textDecoration: 'none' }}>
-                                            Ver Maps →
+                                        <a href={p.localizacao} target="_blank" rel="noopener noreferrer" className="pe-link">
+                                            Ver Localização 📍
                                         </a>
                                     )}
                                 </div>
@@ -221,79 +238,97 @@ const Home = () => {
                 )}
 
                 {/* Action Area */}
-                {!user ? (
-                    <div className="card text-center" style={{ padding: '60px 40px' }}>
-                        <div style={{ fontSize: '60px', marginBottom: '20px' }}>🔐</div>
-                        <p className="text-white" style={{ fontSize: '18px', marginBottom: '24px' }}>
-                            Faça login para confirmar sua presença
-                        </p>
-                        <Link to="/login" className="btn btn-primary" style={{ padding: '12px 32px', fontSize: '16px' }}>
-                            Entrar Agora
-                        </Link>
-                    </div>
-                ) : status && status.confirmed ? (
-                    <div className="card" style={{ background: 'linear-gradient(135deg, rgba(0,255,0,0.05) 0%, rgba(0,200,0,0.1) 100%)', border: '2px solid rgba(0,255,0,0.3)', padding: '32px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '60px', marginBottom: '16px' }}>✅</div>
-                        <h2 className="text-white" style={{ fontSize: '28px', marginBottom: '16px' }}>Presença Confirmada!</h2>
-                        {result ? (
-                            <div className="text-white" style={{ fontSize: '16px', lineHeight: '1.8' }}>
-                                <p>Bom rolê! Você já participou de <strong className="text-gold">{result.stats.participacoes}</strong> eventos.</p>
-                                <p>⭐ Você tem <strong className="text-gold">{result.stats.estrelinhas}</strong> estrelinhas.</p>
-                                {result.stats.aniversariante && <p className="text-gold">🎂 Parabéns pelo seu aniversário nesta semana!</p>}
-                                {result.stats.nova_moto && <p className="text-gold">🏍 Parabéns pela nova moto!</p>}
+                <div className="confirm-section">
+                    {!user ? (
+                        <FormCard title="Participe do Rolê" subtitle="Faça login para confirmar presença" centered>
+                            <div className="text-center">
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
+                                <Link to="/login">
+                                    <Button variant="primary" size="large" fullWidth>
+                                        Fazer Login
+                                    </Button>
+                                </Link>
                             </div>
-                        ) : (
-                            <p className="text-white">Você já garantiu seu lugar neste rolê!</p>
-                        )}
-                    </div>
-                ) : (
-                    <div className="card">
-                        <div style={{ marginBottom: '24px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🏍️</div>
-                            <h2 className="text-gold" style={{ fontSize: '24px' }}>Confirmar Presença</h2>
-                        </div>
-                        <form onSubmit={handleConfirm} style={{ maxWidth: '500px', margin: '0 auto' }}>
-                            <div style={{ marginBottom: '20px' }}>
-                                <label className="text-white" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 'bold' }}>
-                                    🅿️ Escolha seu PE
-                                </label>
-                                <select
-                                    value={pe}
-                                    onChange={(e) => setPe(e.target.value)}
-                                    required
-                                    style={{ width: '100%', padding: '12px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px' }}
-                                >
-                                    <option value="">Selecione um PE...</option>
-                                    {event.pes && event.pes.map(p => (
-                                        <option key={p.id} value={p.nome}>{p.nome} - {p.horario}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        </FormCard>
+                    ) : status && status.confirmed ? (
+                        <>
+                            <FormCard className="confirm-success" centered>
+                                <div className="confirm-icon">✅</div>
+                                <h2 className="text-success text-2xl font-bold mb-2">Presença Confirmada!</h2>
+                                <p className="text-muted mb-4">Você já garantiu seu lugar neste rolê.</p>
 
-                            <div style={{ marginBottom: '28px' }}>
-                                <label className="text-white" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 'bold' }}>
-                                    🏍️ Moto que usará no dia
-                                </label>
-                                <input
+                                {result && (
+                                    <div className="confirm-stats">
+                                        <div className="confirm-stat-item">
+                                            <span>🏍️</span>
+                                            <span>{result.stats.participacoes} participações</span>
+                                        </div>
+                                        <div className="confirm-stat-item">
+                                            <span>⭐</span>
+                                            <span>{result.stats.estrelinhas} estrelinhas</span>
+                                        </div>
+                                        {result.stats.aniversariante && (
+                                            <Badge variant="gold" pulse className="mt-2">🎂 Aniversariante</Badge>
+                                        )}
+                                    </div>
+                                )}
+                            </FormCard>
+
+                            {/* QR Code Display */}
+                            {(result?.confirmation?.qr_code || status?.data?.qr_code) && (
+                                <div className="mt-4">
+                                    <QRCodeDisplay
+                                        qrCode={result?.confirmation?.qr_code || status?.data?.qr_code}
+                                        eventName={event.nome}
+                                        userName={user?.user_metadata?.nome || user?.email}
+                                        checkedInAt={status?.data?.checked_in_at}
+                                        onDownload={() => toast.success('QR Code salvo!')}
+                                    />
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <FormCard title="Confirmar Presença" subtitle="Garanta seu lugar no comboio" centered>
+                            <form onSubmit={handleConfirm}>
+                                <div className="mb-4">
+                                    <label className="block text-muted mb-2 text-sm">Ponto de Encontro</label>
+                                    <select
+                                        value={pe}
+                                        onChange={(e) => setPe(e.target.value)}
+                                        required
+                                        className="modern-input-field"
+                                        style={{ width: '100%', padding: '12px', background: 'var(--color-carbon-lighter)', border: '1px solid var(--color-text-dimmed)', color: 'white' }}
+                                    >
+                                        <option value="">Selecione um PE...</option>
+                                        {event.pes && event.pes.map(p => (
+                                            <option key={p.id} value={p.nome}>{p.nome} - {p.horario}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <Input
+                                    label="Moto que usará"
                                     value={moto}
                                     onChange={(e) => setMoto(e.target.value)}
-                                    placeholder="Ex: Honda CB 500X Vermelha"
+                                    icon="🏍️"
                                     required
-                                    style={{ width: '100%', padding: '12px', background: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '15px' }}
+                                    placeholder="Ex: Honda CB 500X"
                                 />
-                            </div>
 
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={confirming}
-                                style={{ width: '100%', padding: '14px', fontSize: '16px', fontWeight: 'bold' }}
-                            >
-                                {confirming ? 'Confirmando...' : '✓ Confirmar Presença'}
-                            </button>
-                        </form>
-                    </div>
-                )}
+                                <Button
+                                    type="submit"
+                                    variant="primary"
+                                    size="large"
+                                    fullWidth
+                                    loading={confirming}
+                                    icon="✓"
+                                >
+                                    Confirmar Presença
+                                </Button>
+                            </form>
+                        </FormCard>
+                    )}
+                </div>
             </div>
         </div>
     );

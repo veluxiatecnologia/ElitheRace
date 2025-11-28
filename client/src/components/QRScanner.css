@@ -1,0 +1,106 @@
+.qr-scanner-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.qr-scanner-wrapper {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-carbon);
+    border: 2px solid var(--glass-border);
+}
+
+.qr-scanner-wrapper.scanning {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 20px rgba(255, 210, 0, 0.3);
+}
+
+/* Override html5-qrcode styles */
+#qr-reader {
+    border: none !important;
+    width: 100% !important;
+}
+
+#qr-reader video {
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+}
+
+.scanner-error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    text-align: center;
+    z-index: 10;
+}
+
+.scanner-error p {
+    color: #ff4d4d;
+    margin-bottom: 1rem;
+}
+
+.retry-btn {
+    background: var(--color-gold);
+    color: black;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.scanner-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-line {
+    width: 80%;
+    height: 3px;
+    background: var(--color-gold);
+    box-shadow: 0 0 10px var(--color-gold);
+    animation: scan 2s ease-in-out infinite;
+}
+
+@keyframes scan {
+
+    0%,
+    100% {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.scanner-instructions {
+    text-align: center;
+    padding: 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.scanner-instructions p {
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .qr-scanner-container {
+        max-width: 100%;
+    }
+}

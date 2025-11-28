@@ -1,0 +1,70 @@
+.analytics-container {
+    padding-top: 3rem;
+    /* pt-12 equivalent */
+    padding-bottom: 6rem;
+    /* pb-24 equivalent */
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.analytics-back-button {
+    margin-bottom: 2rem;
+    /* mb-8 equivalent */
+}
+
+.analytics-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .analytics-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.analytics-title {
+    font-size: 1.875rem;
+    /* text-3xl */
+    font-weight: 700;
+    /* font-bold */
+    color: white;
+}
+
+.analytics-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Mobile: 2 columns */
+@media (min-width: 640px) {
+    .analytics-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Tablet/Desktop: 4 columns (aggressive layout as requested) */
+@media (min-width: 768px) {
+    .analytics-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Force 4 columns on larger screens if requested specifically, 
+   but let's stick to responsive best practices unless user insists on 4 cols on mobile too.
+   The user asked for "4 primeiros cards um do lado do outro", implying desktop view usually.
+   But I will ensure it breaks nicely.
+*/
+
+/* Update: User specifically complained "Estão um em cima do outro". 
+   I will force a more aggressive grid for desktop.
+*/

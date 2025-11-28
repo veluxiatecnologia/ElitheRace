@@ -1,0 +1,201 @@
+.navbar {
+    background: var(--color-carbon-light);
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--glass-border);
+    position: relative;
+    z-index: 50;
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    transition: transform var(--transition-base);
+}
+
+.navbar-brand:hover {
+    transform: scale(1.02);
+}
+
+.navbar-logo {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-title {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.navbar-desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.navbar-profile-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    font-weight: 500;
+}
+
+.navbar-profile-link:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+}
+
+.navbar-mobile-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: white;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    transition: color var(--transition-base);
+}
+
+.navbar-mobile-btn:hover {
+    color: var(--color-gold);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    animation: fadeIn 0.3s ease;
+}
+
+.mobile-menu-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    background: var(--color-carbon);
+    border-left: 1px solid var(--glass-border);
+    z-index: 999;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-2xl);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-base);
+}
+
+.mobile-menu-close:hover {
+    color: white;
+}
+
+.mobile-menu-logo {
+    margin: var(--spacing-lg) 0 var(--spacing-xl);
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-menu-logo img {
+    height: 60px;
+    width: auto;
+}
+
+.mobile-menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.mobile-user-info {
+    padding: var(--spacing-md);
+    background: var(--color-carbon-lighter);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.mobile-menu-link {
+    padding: var(--spacing-md);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-base);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.mobile-menu-link:hover {
+    background: var(--color-carbon-lighter);
+    color: var(--color-gold);
+}
+
+.mobile-menu-link.active {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--color-gold);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar-desktop-menu {
+        display: none;
+    }
+
+    .navbar-mobile-btn {
+        display: block;
+    }
+
+    .navbar-logo {
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-title {
+        display: none;
+    }
+
+    .navbar-logo {
+        height: 45px;
+    }
+}

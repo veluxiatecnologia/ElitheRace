@@ -1,0 +1,153 @@
+.modern-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    font-family: var(--font-family);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    overflow: hidden;
+}
+
+.modern-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modern-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+
+.modern-btn:not(:disabled):active {
+    transform: translateY(0);
+}
+
+/* Sizes */
+.modern-btn-small {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    min-height: 36px;
+}
+
+.modern-btn-medium {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    min-height: 44px;
+}
+
+.modern-btn-large {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+    min-height: 52px;
+}
+
+/* Variants */
+.modern-btn-primary {
+    background: var(--gradient-gold);
+    color: var(--color-carbon);
+    box-shadow: var(--shadow-md);
+}
+
+.modern-btn-primary:not(:disabled):hover {
+    box-shadow: var(--shadow-glow-gold);
+}
+
+.modern-btn-secondary {
+    background: var(--color-carbon-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-text-muted);
+}
+
+.modern-btn-secondary:not(:disabled):hover {
+    border-color: var(--color-gold);
+    background: var(--color-carbon-lighter);
+}
+
+.modern-btn-danger {
+    background: var(--color-red);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.modern-btn-danger:not(:disabled):hover {
+    background: var(--color-red-hover);
+    box-shadow: 0 0 20px rgba(196, 30, 58, 0.4);
+}
+
+.modern-btn-success {
+    background: var(--color-success);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.modern-btn-success:not(:disabled):hover {
+    background: var(--color-success-hover);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.modern-btn-ghost {
+    background: transparent;
+    color: var(--color-gold);
+    border: 2px solid var(--color-gold);
+}
+
+.modern-btn-ghost:not(:disabled):hover {
+    background: var(--color-gold-light);
+    box-shadow: var(--shadow-glow-gold);
+}
+
+/* Full Width */
+.modern-btn-full {
+    width: 100%;
+}
+
+/* Loading State */
+.modern-btn-loading {
+    pointer-events: none;
+}
+
+.modern-btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* Icon */
+.modern-btn-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+}
+
+.modern-btn-text {
+    display: flex;
+    align-items: center;
+}
+
+/* Ripple Effect */
+.modern-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.modern-btn:not(:disabled):active::after {
+    width: 300px;
+    height: 300px;
+}

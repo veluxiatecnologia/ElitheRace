@@ -1,4 +1,5 @@
 const { db } = require('../db');
+const { generateCheckInQRCode } = require('../services/qrCodeService');
 
 // Helper to check if date is in the same week as birthday (ignoring year)
 function isBirthdayWeek(eventDateStr, birthDateStr) {
@@ -62,10 +63,9 @@ exports.confirmAttendance = async (req, res) => {
         await db.users.update(userId, { participacoes_totais: newParticipacoes, estrelinhas: newEstrelinhas });
 
         // 5. Create Confirmation
-        await db.confirmations.create({
+        const confirmation = await db.confirmations.create({
             evento_id: Number(eventId),
             usuario_id: userId, // UUID
-            // nome_usuario: user.nome, // Removed, we join on read
             moto_dia,
             pe_escolhido,
             nova_moto,
@@ -73,8 +73,28 @@ exports.confirmAttendance = async (req, res) => {
             estrelinhas_snapshot: newEstrelinhas
         });
 
+        // 6. Generate QR Code for check-in
+        let qrCode = null;
+        let qrToken = null;
+        try {
+            const { token, qrCodeDataURL } = await generateCheckInQRCode(confirmation.id);
+            qrToken = token;
+            qrCode = qrCodeDataURL;
+
+            // Update confirmation with QR token
+            await db.confirmations.update(confirmation.id, { qr_token: token });
+        } catch (qrError) {
+            console.error('QR Code generation error:', qrError);
+            // Don't fail the whole confirmation if QR generation fails
+        }
+
         res.status(201).json({
             message: 'Presença confirmada!',
+            confirmation: {
+                id: confirmation.id,
+                qr_code: qrCode,
+                qr_token: qrToken
+            },
             stats: {
                 participacoes: newParticipacoes,
                 estrelinhas: newEstrelinhas,
