@@ -196,7 +196,7 @@ const PhotoModal = ({ photo, onClose, onUpdate }) => {
                                 {liked ? '❤️' : '🤍'} {likeCount} Curtidas
                             </Button>
 
-                            {(currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.id === photo.user_id)) && (
+                            {currentUser && currentUser.user_metadata?.role === 'admin' && (
                                 <Button
                                     variant="danger"
                                     onClick={handleDeletePhoto}

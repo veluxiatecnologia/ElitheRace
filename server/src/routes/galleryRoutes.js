@@ -93,9 +93,9 @@ router.delete('/photos/:photoId', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Foto não encontrada' });
         }
 
-        // Check permission: Admin or Owner
-        if (userRole !== 'admin' && photo.user_id !== userId) {
-            return res.status(403).json({ error: 'Sem permissão para deletar esta foto' });
+        // Check permission: Admin ONLY
+        if (userRole !== 'admin') {
+            return res.status(403).json({ error: 'Apenas administradores podem excluir fotos' });
         }
 
         // Delete from Storage
