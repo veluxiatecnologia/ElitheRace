@@ -32,8 +32,8 @@ const BirthdayList = ({ data, loading }) => {
                 {data.map((birthday) => (
                     <div key={birthday.userId}
                         className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${birthday.isToday
-                                ? 'bg-gold/10 border-gold'
-                                : 'bg-carbon border-glass-border'
+                            ? 'bg-gold/10 border-gold'
+                            : 'bg-carbon border-glass-border'
                             }`}
                     >
                         <div className="flex items-center gap-3">
@@ -42,7 +42,7 @@ const BirthdayList = ({ data, loading }) => {
                                 <div className="font-bold flex items-center gap-2 text-white">
                                     {birthday.name}
                                     {birthday.isToday && (
-                                        <Badge variant="warning" size="sm">HOJE</Badge>
+                                        <Badge variant="warning" size="small">HOJE</Badge>
                                     )}
                                 </div>
                                 <div className="text-xs text-gray-400">

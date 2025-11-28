@@ -38,7 +38,7 @@ const QRCodeDisplay = ({
             <div className="qr-header">
                 <h3 className="qr-title">🎫 Seu QR Code</h3>
                 {checkedInAt && (
-                    <Badge variant="success" size="sm" dot>
+                    <Badge variant="success" size="small" dot>
                         ✓ Check-in realizado
                     </Badge>
                 )}

@@ -471,7 +471,7 @@ const AdminDashboard = () => {
                         <div className="event-info">
                             <div className="event-header">
                                 <h3 className="event-name">{event.nome}</h3>
-                                <Badge variant={event.ativo ? 'success' : 'danger'} size="sm" dot>
+                                <Badge variant={event.ativo ? 'success' : 'danger'} size="small" dot>
                                     {event.ativo ? 'Ativo' : 'Inativo'}
                                 </Badge>
                             </div>
@@ -628,14 +628,14 @@ const AdminDashboard = () => {
 
                 <div className="space-y-2 max-h-[400px] overflow-y-auto">
                     {peTemplates.map(template => (
-                        <div key={template.id} className="flex justify-between items-center p-3 bg-carbon border border-glass-border rounded hover:border-gold transition-colors">
-                            <div>
+                        <div key={template.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 bg-carbon border border-glass-border rounded hover:border-gold transition-colors">
+                            <div className="w-full sm:w-auto">
                                 <div className="font-bold text-white">{template.nome}</div>
-                                <div className="text-xs text-gray-500 truncate max-w-[200px]">{template.localizacao}</div>
+                                <div className="text-xs text-gray-500 truncate max-w-full sm:max-w-[200px]">{template.localizacao}</div>
                             </div>
-                            <div className="flex gap-2">
-                                <Button size="sm" variant="secondary" onClick={() => { setNewPeTemplate({ nome: template.nome, localizacao: template.localizacao }); setEditingPeId(template.id); }}>✏️</Button>
-                                <Button size="sm" variant="danger" onClick={() => handleDeletePeTemplate(template.id)}>🗑️</Button>
+                            <div className="flex w-full sm:w-auto justify-end" style={{ gap: '24px' }}>
+                                <Button size="medium" variant="secondary" onClick={() => { setNewPeTemplate({ nome: template.nome, localizacao: template.localizacao }); setEditingPeId(template.id); }}>✏️</Button>
+                                <Button size="medium" variant="danger" onClick={() => handleDeletePeTemplate(template.id)}>🗑️</Button>
                             </div>
                         </div>
                     ))}
