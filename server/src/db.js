@@ -5,8 +5,19 @@ dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Admin client with Service Role for user management (delete, promote)
+const supabaseAdmin = supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+  : null;
 
 const db = {
   users: {
@@ -307,4 +318,4 @@ const db = {
   }
 };
 
-module.exports = { db, supabase };
+module.exports = { db, supabase, supabaseAdmin };
