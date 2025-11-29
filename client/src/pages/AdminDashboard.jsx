@@ -49,6 +49,7 @@ const AdminDashboard = () => {
 
     // WhatsApp State
     const [whatsappText, setWhatsappText] = useState('');
+    const [whatsappTemplate, setWhatsappTemplate] = useState('');
 
     useEffect(() => {
         const role = user?.user_metadata?.role || user?.role;
