@@ -29,6 +29,11 @@
     height: 50px;
     width: auto;
     object-fit: contain;
+    transition: transform 0.6s ease-in-out;
+}
+
+.navbar-brand:hover .navbar-logo {
+    transform: rotate(360deg);
 }
 
 .navbar-title {
