@@ -9,9 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-const allowedOrigins = process.env.FRONTEND_URL
-    ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000']
-    : true; // Allow all if no FRONTEND_URL is set
+const allowedOrigins = [
+    'https://elitherace.com.br',
+    'https://www.elitherace.com.br',
+    'http://localhost:5173',
+    'http://localhost:3000'
+];
 
 app.use(cors({
     origin: allowedOrigins,
