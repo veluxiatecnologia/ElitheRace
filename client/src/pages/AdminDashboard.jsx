@@ -85,7 +85,7 @@ const AdminDashboard = () => {
 
     const fetchPeTemplates = async () => {
         try {
-            const res = await fetch(`${ API_URL } / api / pe - templates');
+            const res = await fetch(`${API_URL} / api / pe - templates');
             const data = await res.json();
             setPeTemplates(data);
         } catch (error) {
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
         setUploading(true);
         try {
             const fileExt = bannerFile.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const fileName = `${ Date.now() } - ${ Math.random().toString(36).substring(7) }.${ fileExt }`;
             const { error: uploadError } = await supabase.storage
                 .from('event-banners')
                 .upload(fileName, bannerFile);
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
             const headers = await getAuthHeader();
             const validPes = pes.filter(pe => pe.nome_pe && pe.horario_pe);
             const method = editingEventId ? 'PUT' : 'POST';
-            const url = editingEventId ? `/api/events/${editingEventId}` : '/api/events';
+            const url = editingEventId ? `/ api / events / ${ editingEventId }` : '/api/events';
 
             const res = await fetch(url, {
                 method,
@@ -225,7 +225,7 @@ const AdminDashboard = () => {
     const fetchEventPes = async (eventId) => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/events/${eventId}/pes`, { headers });
+            const res = await fetch(`${ API_URL } / api / events / ${ eventId } / pes`, { headers });
             const eventPes = await res.json();
 
             // Map API fields to component state fields and match with templates
@@ -272,7 +272,7 @@ const AdminDashboard = () => {
     const toggleActive = async (id, currentStatus) => {
         try {
             const headers = await getAuthHeader();
-            await fetch(`${API_URL}/api/events/${id}/active`, {
+            await fetch(`${ API_URL } / api / events / ${ id } / active`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', ...headers },
                 body: JSON.stringify({ ativo: !currentStatus })
@@ -288,78 +288,78 @@ const AdminDashboard = () => {
         if (!window.confirm('Tem certeza que deseja excluir este evento?')) return;
         try {
             const headers = await getAuthHeader();
-            await fetch(`${API_URL}/api/events/${id}`, { method: 'DELETE`, headers });
+            await fetch(`${ API_URL } /api/events / ${ id } `, { method: 'DELETE', headers });
             fetchEvents();
-            toast.success('Evento excluído');
-        } catch (error) {
-            toast.error('Erro ao excluir evento');
+    toast.success('Evento excluído');
+} catch (error) {
+    toast.error('Erro ao excluir evento');
+}
+    };
+
+// --- PE Manager ---
+
+const handleCreatePeTemplate = async (e) => {
+    e.preventDefault();
+    try {
+        if (editingPeId) {
+            const { error } = await supabase
+                .from('pe_templates')
+                .update({ nome: newPeTemplate.nome, localizacao: newPeTemplate.localizacao })
+                .eq('id', editingPeId);
+            if (error) throw error;
+        } else {
+            const { error } = await supabase
+                .from('pe_templates')
+                .insert([newPeTemplate]);
+            if (error) throw error;
         }
-    };
+        setNewPeTemplate({ nome: '', localizacao: '' });
+        setEditingPeId(null);
+        fetchPeTemplates();
+        toast.success('PE salvo com sucesso');
+    } catch (error) {
+        toast.error('Erro ao salvar PE');
+    }
+};
 
-    // --- PE Manager ---
-
-    const handleCreatePeTemplate = async (e) => {
-        e.preventDefault();
+const handleDeletePeTemplate = async (id) => {
+    const deletePromise = new Promise(async (resolve, reject) => {
         try {
-            if (editingPeId) {
-                const { error } = await supabase
-                    .from('pe_templates')
-                    .update({ nome: newPeTemplate.nome, localizacao: newPeTemplate.localizacao })
-                    .eq('id', editingPeId);
-                if (error) throw error;
-            } else {
-                const { error } = await supabase
-                    .from('pe_templates')
-                    .insert([newPeTemplate]);
-                if (error) throw error;
-            }
-            setNewPeTemplate({ nome: '', localizacao: '' });
-            setEditingPeId(null);
-            fetchPeTemplates();
-            toast.success('PE salvo com sucesso');
+            const { error } = await supabase.from('pe_templates').delete().eq('id', id);
+            if (error) throw error;
+            await fetchPeTemplates();
+            resolve();
         } catch (error) {
-            toast.error('Erro ao salvar PE');
+            console.error('Error deleting PE:', error);
+            reject(error);
         }
-    };
+    });
 
-    const handleDeletePeTemplate = async (id) => {
-        const deletePromise = new Promise(async (resolve, reject) => {
-            try {
-                const { error } = await supabase.from('pe_templates').delete().eq('id', id);
-                if (error) throw error;
-                await fetchPeTemplates();
-                resolve();
-            } catch (error) {
-                console.error('Error deleting PE:', error);
-                reject(error);
-            }
-        });
+    toast.promise(deletePromise, {
+        loading: 'Excluindo PE...',
+        success: 'PE excluído com sucesso!',
+        error: 'Erro ao excluir PE'
+    });
+};
 
-        toast.promise(deletePromise, {
-            loading: 'Excluindo PE...',
-            success: 'PE excluído com sucesso!',
-            error: 'Erro ao excluir PE'
-        });
-    };
+// --- WhatsApp ---
 
-    // --- WhatsApp ---
+const openSettingsModal = async () => {
+    setIsSettingsModalOpen(true);
+    try {
+        const headers = await getAuthHeader();
+        const res = await fetch(`${ API_URL } /api/settings / whatsapp - template`, { headers });
+        const data = await res.json();
+        setWhatsappTemplate(data.template || '');
+    } catch (error) {
+        console.error(error);
+    }
+};
 
-    const openSettingsModal = async () => {
-        setIsSettingsModalOpen(true);
-        try {
-            const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/settings/whatsapp-template`, { headers });
-            const data = await res.json();
-            setWhatsappTemplate(data.template || '');
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const saveWhatsAppTemplate = async () => {
-        try {
-            const headers = await getAuthHeader();
-            await fetch(`${ API_URL } / api / settings / whatsapp - template', {
+const saveWhatsAppTemplate = async () => {
+    try {
+        const headers = await getAuthHeader();
+        await fetch(`${ API_URL } /api/settings / whatsapp - template`, {
                 method: 'PUT',
                 headers: { ...headers, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ template: whatsappTemplate })
@@ -376,62 +376,62 @@ const generateWhatsapp = async (id) => {
     try {
         const headers = await getAuthHeader();
         const [eventRes, pesRes, confRes, templateRes] = await Promise.all([
-            fetch(`${API_URL}/api/events/${id}`, { headers }),
-            fetch(`${API_URL}/api/events/${id}/pes`, { headers }),
-            fetch(`${API_URL}/api/events/${id}/confirmations`, { headers }),
+            fetch(`${ API_URL } /api/events / ${ id } `, { headers }),
+            fetch(`${ API_URL } /api/events / ${ id }/pes`, { headers }),
+        fetch(`${API_URL}/api/events/${id}/confirmations`, { headers }),
             fetch(`${API_URL}/api/settings/whatsapp-template`, { headers })
             ]);
 
-            const event = await eventRes.json();
-            const pes = await pesRes.json();
-            const confirmations = await confRes.json();
-            const templateData = await templateRes.json();
-            let template = templateData.template;
+const event = await eventRes.json();
+const pes = await pesRes.json();
+const confirmations = await confRes.json();
+const templateData = await templateRes.json();
+let template = templateData.template;
 
-            if (!template) throw new Error('Template não configurado');
+if (!template) throw new Error('Template não configurado');
 
-            // Fetch PE Templates to map destination IDs to names
-            const peTemplatesRes = await fetch(`${ API_URL } / api / pe - templates', { headers });
-            const peTemplates = await peTemplatesRes.json();
+// Fetch PE Templates to map destination IDs to names
+const peTemplatesRes = await fetch(`${API_URL}/api/pe-templates`, { headers });
+const peTemplates = await peTemplatesRes.json();
 
-        // Create a map of PE Template IDs to names for destination lookup
-        const peTemplateMap = {};
-        peTemplates.forEach(template => {
-            peTemplateMap[template.id] = template.nome;
-        });
+// Create a map of PE Template IDs to names for destination lookup
+const peTemplateMap = {};
+peTemplates.forEach(template => {
+    peTemplateMap[template.id] = template.nome;
+});
 
-        let pesList = pes.map(pe => {
-            const destinoPe = pe.destino_pe_id ? peTemplateMap[pe.destino_pe_id] : null;
-            const destinoText = destinoPe ? ` SEGUE PARA ${destinoPe.toUpperCase()}` : '';
-            return `⛽ ${pe.nome} ▶️ SAIDA ÁS ${pe.horario}${destinoText}${pe.localizacao ? `\n👇👇👇\n${pe.localizacao}` : ''}`;
-        }).join('\n\n');
+let pesList = pes.map(pe => {
+    const destinoPe = pe.destino_pe_id ? peTemplateMap[pe.destino_pe_id] : null;
+    const destinoText = destinoPe ? ` SEGUE PARA ${destinoPe.toUpperCase()}` : '';
+    return `⛽ ${pe.nome} ▶️ SAIDA ÁS ${pe.horario}${destinoText}${pe.localizacao ? `\n👇👇👇\n${pe.localizacao}` : ''}`;
+}).join('\n\n');
 
-        confirmations.sort((a, b) => (a.usuario_nome || '').localeCompare(b.usuario_nome || ''));
-        let confList = confirmations.map((conf, i) => {
-            const num = String(i + 2).padStart(2, '0');
-            let line = `🏍${num} ${conf.usuario_nome || 'Desconhecido'} – ${conf.moto_dia} – ${conf.pe_escolhido}`;
-            if (conf.nova_moto) line += ` 🆕`;
-            if (conf.aniversariante_semana) line += ` 🎂`;
-            return line;
-        }).join('\n');
+confirmations.sort((a, b) => (a.usuario_nome || '').localeCompare(b.usuario_nome || ''));
+let confList = confirmations.map((conf, i) => {
+    const num = String(i + 2).padStart(2, '0');
+    let line = `🏍${num} ${conf.usuario_nome || 'Desconhecido'} – ${conf.moto_dia} – ${conf.pe_escolhido}`;
+    if (conf.nova_moto) line += ` 🆕`;
+    if (conf.aniversariante_semana) line += ` 🎂`;
+    return line;
+}).join('\n');
 
-        let text = template
-            .replace(/{DESTINO}/g, event.destino.toUpperCase())
-            .replace(/{DESTINO_NOME}/g, event.destino)
-            .replace(/{DATA}/g, event.data.split('-').reverse().join('/'))
-            .replace(/{LINK_INSCRICAO}/g, event.link_inscricao || '')
-            .replace(/{LINK_MAPS_DESTINO}/g, event.link_maps_destino || '')
-            .replace(/{PEDAGIOS}/g, event.pedagios || '')
-            .replace(/{LISTA_PES}/g, pesList)
-            .replace(/{LISTA_CONFIRMADOS}/g, confList)
-            .replace(/{NOME_EVENTO}/g, event.nome);
+let text = template
+    .replace(/{DESTINO}/g, event.destino.toUpperCase())
+    .replace(/{DESTINO_NOME}/g, event.destino)
+    .replace(/{DATA}/g, event.data.split('-').reverse().join('/'))
+    .replace(/{LINK_INSCRICAO}/g, event.link_inscricao || '')
+    .replace(/{LINK_MAPS_DESTINO}/g, event.link_maps_destino || '')
+    .replace(/{PEDAGIOS}/g, event.pedagios || '')
+    .replace(/{LISTA_PES}/g, pesList)
+    .replace(/{LISTA_CONFIRMADOS}/g, confList)
+    .replace(/{NOME_EVENTO}/g, event.nome);
 
-        setWhatsappText(text);
-        setIsWhatsappModalOpen(true);
-        toast.dismiss(toastId);
+setWhatsappText(text);
+setIsWhatsappModalOpen(true);
+toast.dismiss(toastId);
     } catch (error) {
-        toast.error(error.message || 'Erro ao gerar lista', { id: toastId });
-    }
+    toast.error(error.message || 'Erro ao gerar lista', { id: toastId });
+}
 };
 
 const copyToClipboard = async () => {

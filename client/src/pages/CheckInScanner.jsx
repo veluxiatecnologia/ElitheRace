@@ -71,7 +71,7 @@ const CheckInScanner = () => {
 
         try {
             const headers = await getAuthHeader();
-            const url = `/api/checkin/events/${selectedEventId}/attendance`;
+            const url = `${API_URL}/api/checkin/events/${selectedEventId}/attendance`;
             const res = await fetch(url, { headers });
             const data = await res.json();
             setStats(data.stats);
