@@ -47,7 +47,7 @@ const CheckInScanner = () => {
     const fetchEvents = async () => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/events', { headers });
+            const res = await fetch(`${API_URL}/api/events`, { headers });
             const data = await res.json();
             setEvents(data.filter(e => e.ativo)); // Only active events
             if (data.length > 0) {
@@ -88,7 +88,7 @@ const CheckInScanner = () => {
 
         try {
             // Validate QR code
-            const res = await fetch(`${API_URL}/api/checkin/validate', {
+            const res = await fetch(`${API_URL}/api/checkin/validate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ qrData: decodedText })
@@ -123,7 +123,7 @@ const CheckInScanner = () => {
         const checkInPromise = new Promise(async (resolve, reject) => {
             try {
                 const headers = await getAuthHeader();
-                const res = await fetch(`${API_URL}/api/checkin/register', {
+                const res = await fetch(`${API_URL}/api/checkin/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -73,7 +73,7 @@ const Profile = () => {
             setEditData(profileInfo);
 
             const headers = await getAuthHeader();
-            const resHistory = await fetch(`${API_URL}/api/events/history', { headers });
+            const resHistory = await fetch(`${API_URL}/api/events/history`, { headers });
             const historyData = await resHistory.json();
             setHistory(historyData);
 

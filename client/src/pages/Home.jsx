@@ -41,7 +41,7 @@ const Home = () => {
 
     const fetchEvent = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/events/active');
+            const res = await fetch(`${API_URL}/api/events/active`);
             const data = await res.json();
             if (data.message) {
                 setEvent(null);

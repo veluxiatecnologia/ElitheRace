@@ -39,9 +39,9 @@ const Analytics = () => {
 
                 // Fetch all data in parallel
                 const [statsRes, top10Res, birthdaysRes] = await Promise.all([
-                    fetch(`${API_URL}/api/admin/dashboard/stats', { headers }),
-                    fetch(`${API_URL}/api/admin/dashboard/top10', { headers }),
-                    fetch(`${API_URL}/api/admin/dashboard/birthdays', { headers })
+                    fetch(`${API_URL}/api/admin/dashboard/stats`, { headers }),
+                    fetch(`${API_URL}/api/admin/dashboard/top10`, { headers }),
+                    fetch(`${API_URL}/api/admin/dashboard/birthdays`, { headers })
                 ]);
 
                 if (!statsRes.ok || !top10Res.ok || !birthdaysRes.ok) {

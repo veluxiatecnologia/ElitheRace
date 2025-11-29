@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     const fetchEvents = async () => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/events', { headers });
+            const res = await fetch(`${API_URL}/api/events`, { headers });
             const data = await res.json();
             setEvents(data);
         } catch (error) {
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
         if (!window.confirm('Tem certeza que deseja excluir este evento?')) return;
         try {
             const headers = await getAuthHeader();
-            await fetch(`${API_URL}/api/events/${id}`, { method: 'DELETE', headers });
+            await fetch(`${API_URL}/api/events/${id}`, { method: 'DELETE`, headers });
             fetchEvents();
             toast.success('Evento excluído');
         } catch (error) {
@@ -348,7 +348,7 @@ const AdminDashboard = () => {
         setIsSettingsModalOpen(true);
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/settings/whatsapp-template', { headers });
+            const res = await fetch(`${API_URL}/api/settings/whatsapp-template`, { headers });
             const data = await res.json();
             setWhatsappTemplate(data.template || '');
         } catch (error) {
@@ -379,7 +379,7 @@ const generateWhatsapp = async (id) => {
             fetch(`${API_URL}/api/events/${id}`, { headers }),
             fetch(`${API_URL}/api/events/${id}/pes`, { headers }),
             fetch(`${API_URL}/api/events/${id}/confirmations`, { headers }),
-            fetch(`${API_URL}/api/settings/whatsapp-template', { headers })
+            fetch(`${API_URL}/api/settings/whatsapp-template`, { headers })
             ]);
 
             const event = await eventRes.json();
