@@ -789,39 +789,60 @@ const AdminDashboard = () => {
                         <LoadingSkeleton height={60} />
                     </div>
                 ) : (
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {users.map(u => (
-                            <div key={u.id} className="flex items-center justify-between gap-3 p-3 bg-carbon border border-glass-border rounded hover:border-gold transition-colors">
-                                <div className="flex items-center gap-3 flex-1">
-                                    <div className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-gold font-bold">
-                                        {u.nome?.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-bold text-white flex items-center gap-2">
-                                            {u.nome}
-                                            {u.role === 'admin' && <Badge variant="gold">ADMIN</Badge>}
+                            <div key={u.id} className="event-card">
+                                <div className="event-info">
+                                    <div className="event-header" style={{ alignItems: 'flex-start' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{
+                                                width: '48px',
+                                                height: '48px',
+                                                borderRadius: '50%',
+                                                background: 'linear-gradient(135deg, #d4af37 0%, #f4d46f 100%)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontSize: '20px',
+                                                fontWeight: 'bold',
+                                                color: '#1a1a1a',
+                                                flexShrink: 0
+                                            }}>
+                                                {u.nome?.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <h3 className="event-name" style={{ marginBottom: '4px' }}>{u.nome}</h3>
+                                                {u.role === 'admin' && <Badge variant="gold" size="small">ADMIN</Badge>}
+                                            </div>
                                         </div>
-                                        <div className="text-xs text-gray-500">{u.email}</div>
-                                        <div className="text-xs text-gray-600">{u.moto_atual || 'Sem moto cadastrada'}</div>
+                                    </div>
+                                    <div className="event-meta" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                                        <span className="event-meta-item">📧 {u.email}</span>
+                                        <span className="event-meta-item">🏍️ {u.moto_atual || 'Sem moto'}</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
+
+                                <div className="event-actions" style={{ marginTop: '12px' }}>
                                     {u.role === 'admin' ? (
-                                        <Button size="small" variant="secondary" onClick={() => handleDemoteUser(u.id, u.nome)}>
-                                            ⬇️ Despromover
+                                        <Button size="small" variant="secondary" onClick={() => handleDemoteUser(u.id, u.nome)} icon="⬇️">
+                                            Despromover
                                         </Button>
                                     ) : (
-                                        <Button size="small" variant="secondary" onClick={() => handlePromoteUser(u.id, u.nome)}>
-                                            ⚡ Promover
+                                        <Button size="small" variant="primary" onClick={() => handlePromoteUser(u.id, u.nome)} icon="⚡">
+                                            Promover
                                         </Button>
                                     )}
-                                    <Button size="small" variant="danger" onClick={() => handleDeleteUser(u.id, u.nome)}>
-                                        🗑️
+                                    <Button size="small" variant="danger" onClick={() => handleDeleteUser(u.id, u.nome)} icon="🗑️">
+                                        Excluir
                                     </Button>
                                 </div>
                             </div>
                         ))}
-                        {users.length === 0 && <p className="text-center text-gray-500 py-8">Nenhum usuário encontrado.</p>}
+                        {users.length === 0 && (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
+                                Nenhum usuário encontrado.
+                            </div>
+                        )}
                     </div>
                 )}
             </Modal>
