@@ -339,6 +339,41 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleSavePeTemplate = async () => {
+        if (!newPeTemplate.nome) {
+            toast.error('Nome do PE é obrigatório');
+            return;
+        }
+
+        try {
+            if (editingPeId) {
+                const { error } = await supabase
+                    .from('pe_templates')
+                    .update({ nome: newPeTemplate.nome, localizacao: newPeTemplate.localizacao })
+                    .eq('id', editingPeId);
+                if (error) throw error;
+                toast.success('PE atualizado!');
+            } else {
+                const { error } = await supabase
+                    .from('pe_templates')
+                    .insert([newPeTemplate]);
+                if (error) throw error;
+                toast.success('PE criado!');
+            }
+            setNewPeTemplate({ nome: '', localizacao: '' });
+            setEditingPeId(null);
+            fetchPeTemplates();
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao salvar PE');
+        }
+    };
+
+    const handleEditPeTemplate = (pe) => {
+        setNewPeTemplate({ nome: pe.nome, localizacao: pe.localizacao });
+        setEditingPeId(pe.id);
+    };
+
     const handleDeletePeTemplate = async (id) => {
         const deletePromise = new Promise(async (resolve, reject) => {
             try {
@@ -555,8 +590,14 @@ const AdminDashboard = () => {
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <h1>Painel Administrativo</h1>
-                <p>Gerencie eventos, pontos de encontro e configurações do sistema.</p>
+                <div>
+                    <h1>Painel Administrativo</h1>
+                    <p>Gerencie eventos, pontos de encontro e configurações do sistema.</p>
+                </div>
+                <div className="admin-actions" style={{ display: 'flex', gap: '0.75rem' }}>
+                    <Button variant="secondary" size="small" onClick={() => navigate('/admin/analytics')}>📊 Dashboard</Button>
+                    <Button variant="secondary" size="small" onClick={() => navigate('/admin/checkin-scanner')}>📱 QR Scanner</Button>
+                </div>
             </div>
 
             <div className="admin-tabs">
