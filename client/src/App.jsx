@@ -63,6 +63,9 @@ function App() {
                                 </a>
                             </div>
                             "Se é estrada, é lar. Se é Elithe, é família."
+                            <div style={{ marginTop: '10px', fontSize: '0.75rem', color: '#888' }}>
+                                © 2025 Veluxia.com.br - Todos os direitos reservados.
+                            </div>
                         </footer>
                     </SkeletonTheme>
                 </ProfileProvider>
