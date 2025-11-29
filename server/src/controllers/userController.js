@@ -85,4 +85,36 @@ const userController = {
     }
 };
 
+// Demote a user to member
+exports.demoteUser = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        if (!supabaseAdmin) {
+            throw new Error('SUPABASE_SERVICE_ROLE_KEY não configurada');
+        }
+
+        // 1. Update Profile
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ role: 'member' })
+            .eq('id', id);
+
+        if (profileError) throw profileError;
+
+        // 2. Update Supabase Auth Metadata
+        const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+            id,
+            { user_metadata: { role: 'member' } }
+        );
+
+        if (authError) throw authError;
+
+        res.json({ message: 'Usuário despromovido com sucesso' });
+    } catch (error) {
+        console.error('Erro ao despromover usuário:', error);
+        res.status(500).json({ error: error.message || 'Erro ao despromover usuário' });
+    }
+};
+
 module.exports = userController;

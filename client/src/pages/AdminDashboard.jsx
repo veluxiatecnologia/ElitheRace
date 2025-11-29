@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     // Data States
     const [events, setEvents] = useState([]);
     const [peTemplates, setPeTemplates] = useState([]);
-    const [activeTab, setActiveTab] = useState('events');
+    const [whatsappTemplate, setWhatsappTemplate] = useState('');
 
     // UI States
     const [loading, setLoading] = useState(true);
@@ -49,7 +49,10 @@ const AdminDashboard = () => {
 
     // WhatsApp State
     const [whatsappText, setWhatsappText] = useState('');
-    const [whatsappTemplate, setWhatsappTemplate] = useState('');
+
+    // User Management States
+    const [users, setUsers] = useState([]);
+    const [loadingUsers, setLoadingUsers] = useState(false);
 
     useEffect(() => {
         const role = user?.user_metadata?.role || user?.role;
@@ -297,22 +300,6 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleCreateEvent = () => {
-        openEventModal();
-    };
-
-    const handleEditEvent = (event) => {
-        openEventModal(event);
-    };
-
-    const handleActivateEvent = (id) => {
-        toggleActive(id, false);
-    };
-
-    const handleDeleteEvent = (id) => {
-        deleteEvent(id);
-    };
-
     // --- PE Manager ---
 
     const handleCreatePeTemplate = async (e) => {
@@ -339,41 +326,6 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleSavePeTemplate = async () => {
-        if (!newPeTemplate.nome) {
-            toast.error('Nome do PE é obrigatório');
-            return;
-        }
-
-        try {
-            if (editingPeId) {
-                const { error } = await supabase
-                    .from('pe_templates')
-                    .update({ nome: newPeTemplate.nome, localizacao: newPeTemplate.localizacao })
-                    .eq('id', editingPeId);
-                if (error) throw error;
-                toast.success('PE atualizado!');
-            } else {
-                const { error } = await supabase
-                    .from('pe_templates')
-                    .insert([newPeTemplate]);
-                if (error) throw error;
-                toast.success('PE criado!');
-            }
-            setNewPeTemplate({ nome: '', localizacao: '' });
-            setEditingPeId(null);
-            fetchPeTemplates();
-        } catch (error) {
-            console.error(error);
-            toast.error('Erro ao salvar PE');
-        }
-    };
-
-    const handleEditPeTemplate = (pe) => {
-        setNewPeTemplate({ nome: pe.nome, localizacao: pe.localizacao });
-        setEditingPeId(pe.id);
-    };
-
     const handleDeletePeTemplate = async (id) => {
         const deletePromise = new Promise(async (resolve, reject) => {
             try {
@@ -395,18 +347,6 @@ const AdminDashboard = () => {
     };
 
     // --- WhatsApp ---
-
-    const fetchWhatsappTemplate = async () => {
-        try {
-            const headers = await getAuthHeader();
-            const res = await fetch(API_URL + '/api/settings/whatsapp-template', { headers });
-            const data = await res.json();
-            setWhatsappTemplate(data.template || '');
-        } catch (error) {
-            console.error(error);
-            toast.error('Erro ao carregar template');
-        }
-    };
 
     const openSettingsModal = async () => {
         setIsSettingsModalOpen(true);
@@ -505,9 +445,6 @@ const AdminDashboard = () => {
     };
 
     // --- User Management ---
-    const [users, setUsers] = useState([]);
-    const [loadingUsers, setLoadingUsers] = useState(false);
-
     const fetchUsers = async () => {
         setLoadingUsers(true);
         try {
@@ -539,7 +476,29 @@ const AdminDashboard = () => {
             if (!res.ok) throw new Error(data.error || 'Erro ao promover usuário');
 
             toast.success('Usuário promovido com sucesso!', { id: toastId });
-            fetchUsers(); // Refresh list
+            fetchUsers();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message, { id: toastId });
+        }
+    };
+
+    const handleDemoteUser = async (userId, userName) => {
+        if (!window.confirm(`Tem certeza que deseja remover ${userName} de Administrador?`)) return;
+
+        const toastId = toast.loading('Removendo privilégios...');
+        try {
+            const headers = await getAuthHeader();
+            const res = await fetch(`${API_URL}/api/users/${userId}/demote`, {
+                method: 'PUT',
+                headers
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Erro ao remover privilégios');
+
+            toast.success('Privilégios removidos com sucesso!', { id: toastId });
+            fetchUsers();
         } catch (error) {
             console.error(error);
             toast.error(error.message, { id: toastId });
@@ -561,303 +520,218 @@ const AdminDashboard = () => {
             if (!res.ok) throw new Error(data.error || 'Erro ao excluir usuário');
 
             toast.success('Usuário excluído com sucesso!', { id: toastId });
-            fetchUsers(); // Refresh list
+            fetchUsers();
         } catch (error) {
             console.error(error);
             toast.error(error.message, { id: toastId });
         }
     };
 
-    if (showPermission) {
-        return <PermissionWarning />;
-    }
-
-    if (loading) {
-        return (
-            <div className="admin-container">
-                <div className="admin-header">
-                    <h1>Painel Administrativo</h1>
-                </div>
-                <div className="admin-grid">
-                    <LoadingSkeleton height="200px" />
-                    <LoadingSkeleton height="200px" />
-                    <LoadingSkeleton height="200px" />
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="p-8"><LoadingSkeleton count={5} height={40} /></div>;
+    if (showPermission) return <PermissionWarning />;
 
     return (
         <div className="admin-container">
             <div className="admin-header">
-                <div>
-                    <h1>Painel Administrativo</h1>
-                    <p>Gerencie eventos, pontos de encontro e configurações do sistema.</p>
-                </div>
-                <div className="admin-actions" style={{ display: 'flex', gap: '0.75rem' }}>
-                    <Button variant="secondary" size="small" onClick={() => navigate('/admin/analytics')}>📊 Dashboard</Button>
-                    <Button variant="secondary" size="small" onClick={() => navigate('/admin/checkin-scanner')}>📱 QR Scanner</Button>
+                <h1 className="admin-title">Painel Admin</h1>
+                <div className="admin-actions">
+                    <Button variant="secondary" onClick={() => navigate('/admin/checkin-scanner')} icon="📷">
+                        Scanner Check-in
+                    </Button>
+                    <Button variant="secondary" onClick={() => navigate('/admin/analytics')} icon="📊">
+                        Analytics
+                    </Button>
+                    <Button variant="secondary" onClick={openSettingsModal} icon="⚙️">
+                        Configs
+                    </Button>
+                    <Button variant="secondary" onClick={() => setIsPeModalOpen(true)} icon="📍">
+                        Gerenciar PEs
+                    </Button>
+                    <Button variant="secondary" onClick={fetchUsers} icon="👥">
+                        Gerenciar Usuários
+                    </Button>
+                    <Button variant="primary" onClick={() => openEventModal()} icon="➕">
+                        Novo Evento
+                    </Button>
                 </div>
             </div>
 
-            <div className="admin-tabs">
-                <button
-                    className={`admin-tab ${activeTab === 'events' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('events')}
-                >
-                    📅 Eventos
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'pes' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('pes')}
-                >
-                    📍 Pontos de Encontro
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'users' ? 'active' : ''}`}
-                    onClick={() => {
-                        setActiveTab('users');
-                        fetchUsers();
-                    }}
-                >
-                    👥 Usuários
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'settings' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('settings')}
-                >
-                    ⚙️ Configurações
-                </button>
-            </div>
-
-            <div className="admin-content">
-                {/* --- Events Tab --- */}
-                {activeTab === 'events' && (
-                    <div className="admin-section">
-                        <div className="section-header">
-                            <h2>Gerenciar Eventos</h2>
-                            <Button icon="+" onClick={handleCreateEvent}>Novo Evento</Button>
-                        </div>
-
-                        <div className="events-list">
-                            {events.map(event => (
-                                <div key={event.id} className={`event-card ${!event.ativo ? 'inactive' : ''}`}>
-                                    <div className="event-info">
-                                        <h3>{event.nome}</h3>
-                                        <div className="event-meta">
-                                            <span>📅 {new Date(event.data).toLocaleDateString()}</span>
-                                            <span>📍 {event.destino}</span>
-                                        </div>
-                                        {!event.ativo && <Badge variant="warning">Inativo</Badge>}
-                                    </div>
-                                    <div className="event-actions">
-                                        <Button variant="secondary" size="small" onClick={() => handleEditEvent(event)}>✏️ Editar</Button>
-                                        <Button variant="danger" size="small" onClick={() => handleDeleteEvent(event.id)}>🗑️ Excluir</Button>
-                                        {!event.ativo && (
-                                            <Button variant="primary" size="small" onClick={() => handleActivateEvent(event.id)}>✅ Ativar</Button>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                            {events.length === 0 && <p className="empty-state">Nenhum evento cadastrado.</p>}
-                        </div>
-                    </div>
-                )}
-
-                {/* --- PEs Tab --- */}
-                {activeTab === 'pes' && (
-                    <div className="admin-section">
-                        <div className="section-header">
-                            <h2>Modelos de Ponto de Encontro</h2>
-                            <div className="add-pe-form">
-                                <Input
-                                    placeholder="Nome do PE (ex: Posto BR)"
-                                    value={newPeTemplate.nome}
-                                    onChange={(e) => setNewPeTemplate({ ...newPeTemplate, nome: e.target.value })}
-                                />
-                                <Input
-                                    placeholder="Link do Google Maps"
-                                    value={newPeTemplate.localizacao}
-                                    onChange={(e) => setNewPeTemplate({ ...newPeTemplate, localizacao: e.target.value })}
-                                />
-                                <Button onClick={handleSavePeTemplate} disabled={!newPeTemplate.nome}>
-                                    {editingPeId ? 'Atualizar' : 'Adicionar'}
-                                </Button>
-                                {editingPeId && (
-                                    <Button variant="ghost" onClick={() => {
-                                        setEditingPeId(null);
-                                        setNewPeTemplate({ nome: '', localizacao: '' });
-                                    }}>Cancelar</Button>
-                                )}
+            {/* Event List */}
+            <div className="event-list">
+                {events.map(event => (
+                    <div key={event.id} className="event-card">
+                        <div className="event-info">
+                            <div className="event-header">
+                                <h3 className="event-name">{event.nome}</h3>
+                                <Badge variant={event.ativo ? 'success' : 'danger'} size="small" dot>
+                                    {event.ativo ? 'Ativo' : 'Inativo'}
+                                </Badge>
+                            </div>
+                            <div className="event-meta">
+                                <span className="event-meta-item">📅 {event.data.split('-').reverse().join('/')}</span>
+                                <span className="event-meta-item">📍 {event.destino}</span>
                             </div>
                         </div>
 
-                        <div className="pes-list">
-                            {peTemplates.map(pe => (
-                                <div key={pe.id} className="pe-card">
-                                    <div className="pe-info">
-                                        <strong>{pe.nome}</strong>
-                                        <a href={pe.localizacao} target="_blank" rel="noopener noreferrer" className="pe-link">
-                                            🗺️ Ver no mapa
-                                        </a>
-                                    </div>
-                                    <div className="pe-actions">
-                                        <Button variant="ghost" size="small" onClick={() => handleEditPeTemplate(pe)}>✏️</Button>
-                                        <Button variant="ghost" size="small" className="text-red" onClick={() => handleDeletePeTemplate(pe.id)}>🗑️</Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Users Tab --- */}
-                {activeTab === 'users' && (
-                    <div className="admin-section">
-                        <div className="section-header">
-                            <h2>Gerenciar Usuários</h2>
-                            <Button variant="ghost" onClick={fetchUsers} disabled={loadingUsers}>🔄 Atualizar</Button>
-                        </div>
-
-                        {loadingUsers ? (
-                            <div className="users-list">
-                                <LoadingSkeleton height="60px" />
-                                <LoadingSkeleton height="60px" />
-                                <LoadingSkeleton height="60px" />
-                            </div>
-                        ) : (
-                            <div className="users-list">
-                                {users.map(u => (
-                                    <div key={u.id} className="user-card">
-                                        <div className="user-avatar">
-                                            {u.avatar_url ? (
-                                                <img src={u.avatar_url} alt={u.nome} />
-                                            ) : (
-                                                <div className="avatar-placeholder">{u.nome?.charAt(0)}</div>
-                                            )}
-                                        </div>
-                                        <div className="user-info">
-                                            <h3>{u.nome} {u.role === 'admin' && <Badge variant="gold">ADMIN</Badge>}</h3>
-                                            <p>{u.email}</p>
-                                            <span className="user-moto">{u.moto_atual || 'Sem moto cadastrada'}</span>
-                                        </div>
-                                        <div className="user-actions">
-                                            {u.role !== 'admin' && (
-                                                <Button
-                                                    variant="secondary"
-                                                    size="small"
-                                                    onClick={() => handlePromoteUser(u.id, u.nome)}
-                                                    title="Promover a Administrador"
-                                                >
-                                                    ⚡ Promover
-                                                </Button>
-                                            )}
-                                            <Button
-                                                variant="danger"
-                                                size="small"
-                                                onClick={() => handleDeleteUser(u.id, u.nome)}
-                                                title="Excluir Usuário"
-                                            >
-                                                🗑️ Excluir
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                                {users.length === 0 && <p className="empty-state">Nenhum usuário encontrado.</p>}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* --- Settings Tab --- */}
-                {activeTab === 'settings' && (
-                    <div className="admin-section">
-                        <div className="section-header">
-                            <h2>Configurações do WhatsApp</h2>
-                        </div>
-                        <div className="settings-card">
-                            <p className="settings-desc">
-                                Personalize a mensagem padrão enviada para o grupo do WhatsApp.
-                                Variáveis disponíveis: <code>{'{NOME}'}</code>, <code>{'{DATA}'}</code>, <code>{'{DESTINO}'}</code>, <code>{'{LINK_INSCRICAO}'}</code>, <code>{'{OBSERVACOES}'}</code>
-                            </p>
-                            <Button onClick={() => {
-                                fetchWhatsappTemplate();
-                                setIsWhatsappModalOpen(true);
-                            }}>
-                                📱 Editar Template WhatsApp
+                        <div className="event-actions">
+                            <Button variant={event.ativo ? 'danger' : 'success'} onClick={() => toggleActive(event.id, event.ativo)}>
+                                {event.ativo ? 'Desativar' : 'Ativar'}
                             </Button>
+                            <Button variant="secondary" onClick={() => openEventModal(event)} icon="✏️">
+                                Editar
+                            </Button>
+                            <Button variant="secondary" onClick={() => generateWhatsapp(event.id)} icon="📱" className="bg-green-600 hover:bg-green-700 border-none text-white">
+                                Zap
+                            </Button>
+                            <Button variant="danger" onClick={() => deleteEvent(event.id)} icon="🗑️" />
                         </div>
                     </div>
-                )}
+                ))}
             </div>
 
-            {/* Modals */}
+            {/* --- MODALS --- */}
+
+            {/* Event Modal */}
             <Modal
                 isOpen={isEventModalOpen}
-                onClose={() => setIsEventModalOpen(false)}
-                title={editingEventId ? "Editar Evento" : "Novo Evento"}
+                onClose={closeEventModal}
+                title={editingEventId ? 'Editar Evento' : 'Novo Evento'}
+                size="lg"
+                footer={
+                    <>
+                        <Button variant="ghost" onClick={closeEventModal} disabled={saving}>Cancelar</Button>
+                        <Button variant="primary" onClick={handleSubmitEvent} loading={saving} icon="✓">Salvar</Button>
+                    </>
+                }
             >
-                <form onSubmit={handleSubmitEvent} className="event-form">
-                    <Input label="Nome do Evento" name="nome" value={formData.nome} onChange={handleInputChange} required />
-                    <Input label="Data" type="date" name="data" value={formData.data} onChange={handleInputChange} required />
-                    <Input label="Destino" name="destino" value={formData.destino} onChange={handleInputChange} required />
-                    <Input label="Link Google Maps (Destino)" name="link_maps_destino" value={formData.link_maps_destino} onChange={handleInputChange} />
-                    <Input label="Link de Inscrição (Sympla/Outros)" name="link_inscricao" value={formData.link_inscricao} onChange={handleInputChange} />
-                    <Input label="Pedágios (Valor Total)" name="pedagios" value={formData.pedagios} onChange={handleInputChange} placeholder="Ex: R$ 25,00" />
+                <div className="grid gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                            <Input label="Nome do Rolê" name="nome" value={formData.nome} onChange={handleInputChange} />
+                        </div>
+                        <Input label="Data" type="date" name="data" value={formData.data} onChange={handleInputChange} />
+                    </div>
+
+                    <Input label="Destino" name="destino" value={formData.destino} onChange={handleInputChange} />
+                    <Input label="Link Maps Destino" name="link_maps_destino" value={formData.link_maps_destino} onChange={handleInputChange} placeholder="https://maps.google.com/..." />
 
                     <div className="form-group">
-                        <label>Banner do Evento</label>
-                        <div className="banner-upload">
-                            {bannerPreview && <img src={bannerPreview} alt="Preview" className="banner-preview" />}
-                            <input type="file" accept="image/*" onChange={handleBannerChange} />
+                        <label className="block text-sm text-gray-400 mb-2">Banner do Evento</label>
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                            {bannerPreview && (
+                                <div className="relative group">
+                                    <img src={bannerPreview} alt="Preview" className="w-full md:w-32 h-32 object-cover rounded border border-gray-600" />
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                                        <span className="text-xs text-white">Preview</span>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex-1 w-full">
+                                <label className="flex items-center justify-center w-full md:w-auto px-4 py-2 bg-gold text-black font-bold rounded cursor-pointer hover:bg-yellow-500 transition-colors">
+                                    <span>📷 Escolher Imagem</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleBannerChange}
+                                        className="hidden"
+                                    />
+                                </label>
+                                <p className="text-xs text-gray-500 mt-2">Recomendado: 1920x1080px (JPG, PNG)</p>
+                                {bannerFile && <p className="text-xs text-green-500 mt-1">Arquivo selecionado: {bannerFile.name}</p>}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label>Observações</label>
-                        <textarea
-                            name="observacoes"
-                            value={formData.observacoes}
-                            onChange={handleInputChange}
-                            rows="4"
-                            className="form-textarea"
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="form-group">
+                            <label className="block text-sm text-gray-400 mb-2">Observações</label>
+                            <textarea name="observacoes" value={formData.observacoes} onChange={handleInputChange} rows="3" className="w-full bg-carbon-lighter border border-glass-border rounded-md p-2 text-white focus:border-gold outline-none" />
+                        </div>
+                        <div className="form-group">
+                            <label className="block text-sm text-gray-400 mb-2">Pedágios</label>
+                            <textarea name="pedagios" value={formData.pedagios} onChange={handleInputChange} rows="3" className="w-full bg-carbon-lighter border border-glass-border rounded-md p-2 text-white focus:border-gold outline-none" />
+                        </div>
                     </div>
 
-                    <div className="pes-section">
-                        <h3>Pontos de Encontro</h3>
+                    <div className="border-t border-glass-border pt-4 mt-2">
+                        <h4 className="text-gold font-bold mb-3">Pontos de Encontro (PEs)</h4>
                         {pes.map((pe, index) => (
-                            <div key={index} className="pe-row">
-                                <div className="pe-inputs">
+                            <div key={index} className="flex flex-col gap-2 mb-4 p-3 bg-carbon-lighter rounded border border-glass-border">
+                                <select
+                                    value={pe.template_id || ''}
+                                    onChange={(e) => handlePeChange(index, 'template_id', e.target.value)}
+                                    className="w-full bg-carbon border border-glass-border rounded-md text-white focus:border-gold outline-none pe-select"
+                                >
+                                    <option value="">Selecione um PE...</option>
+                                    {peTemplates.map(t => <option key={t.id} value={t.id}>{t.nome}</option>)}
+                                </select>
+                                <div className="flex items-center gap-2">
                                     <Input
-                                        placeholder="Nome do PE"
-                                        value={pe.nome_pe}
-                                        onChange={(e) => handlePeChange(index, 'nome_pe', e.target.value)}
-                                        list="pe-suggestions"
-                                    />
-                                    <datalist id="pe-suggestions">
-                                        {peTemplates.map(t => <option key={t.id} value={t.nome} />)}
-                                    </datalist>
-
-                                    <Input
-                                        type="time"
-                                        value={pe.horario_pe}
+                                        value={pe.horario_pe || ''}
                                         onChange={(e) => handlePeChange(index, 'horario_pe', e.target.value)}
+                                        type="time"
+                                        placeholder="Horário"
+                                        className="mb-0 pe-time-input"
+                                    />
+                                    <Button
+                                        variant="danger"
+                                        onClick={() => removePeField(index)}
+                                        icon="✕"
+                                        className="pe-delete-btn"
                                     />
                                 </div>
-                                {index > 0 && (
-                                    <button type="button" className="remove-pe-btn" onClick={() => removePeField(index)}>×</button>
-                                )}
+                                <select
+                                    value={pe.destino_pe_id || ''}
+                                    onChange={(e) => handlePeChange(index, 'destino_pe_id', e.target.value)}
+                                    className="w-full bg-carbon border border-glass-border rounded-md text-white focus:border-gold outline-none pe-select p-2"
+                                >
+                                    <option value="">➡️ Segue para PE... (Opcional)</option>
+                                    {peTemplates.map(template => (
+                                        <option key={template.id} value={template.id}>
+                                            {template.nome}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         ))}
-                        <Button type="button" variant="secondary" size="small" onClick={addPeField}>+ Adicionar PE</Button>
+                        <Button variant="secondary" onClick={addPeField} icon="➕" className="w-50">Adicionar PE</Button>
                     </div>
+                </div>
+            </Modal>
 
-                    <div className="modal-actions">
-                        <Button type="button" variant="ghost" onClick={() => setIsEventModalOpen(false)}>Cancelar</Button>
-                        <Button type="submit" loading={saving}>{editingEventId ? 'Salvar Alterações' : 'Criar Evento'}</Button>
+            {/* PE Manager Modal */}
+            <Modal
+                isOpen={isPeModalOpen}
+                onClose={() => setIsPeModalOpen(false)}
+                title="Gerenciar Pontos de Encontro"
+                size="md"
+            >
+                <form onSubmit={handleCreatePeTemplate} className="mb-6 p-4 bg-carbon-lighter rounded-lg border border-glass-border">
+                    <h4 className="text-sm font-bold text-gray-400 mb-3 uppercase">{editingPeId ? 'Editar PE' : 'Novo PE'}</h4>
+                    <div className="grid gap-3">
+                        <Input label="Nome do PE" value={newPeTemplate.nome} onChange={(e) => setNewPeTemplate({ ...newPeTemplate, nome: e.target.value })} required />
+                        <Input label="Link Maps" value={newPeTemplate.localizacao} onChange={(e) => setNewPeTemplate({ ...newPeTemplate, localizacao: e.target.value })} required />
+                        <div className="flex gap-2 justify-end">
+                            {editingPeId && <Button variant="ghost" onClick={() => { setEditingPeId(null); setNewPeTemplate({ nome: '', localizacao: '' }); }}>Cancelar</Button>}
+                            <Button variant="primary" type="submit">{editingPeId ? 'Atualizar' : 'Adicionar'}</Button>
+                        </div>
                     </div>
                 </form>
+
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {peTemplates.map(template => (
+                        <div key={template.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3 bg-carbon border border-glass-border rounded hover:border-gold transition-colors">
+                            <div className="w-full sm:w-auto">
+                                <div className="font-bold text-white">{template.nome}</div>
+                                <div className="text-xs text-gray-500 truncate max-w-full sm:max-w-[200px]">{template.localizacao}</div>
+                            </div>
+                            <div className="flex w-full sm:w-auto justify-end" style={{ gap: '24px' }}>
+                                <Button size="medium" variant="secondary" onClick={() => { setNewPeTemplate({ nome: template.nome, localizacao: template.localizacao }); setEditingPeId(template.id); }}>✏️</Button>
+                                <Button size="medium" variant="danger" onClick={() => handleDeletePeTemplate(template.id)}>🗑️</Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </Modal>
 
             {/* Settings Modal */}
@@ -899,6 +773,57 @@ const AdminDashboard = () => {
                     rows="15"
                     className="w-full bg-carbon-lighter border border-glass-border rounded-md p-3 text-white font-mono text-sm focus:border-gold outline-none"
                 />
+            </Modal>
+
+            {/* Users Management Modal */}
+            <Modal
+                isOpen={loadingUsers || users.length > 0}
+                onClose={() => setUsers([])}
+                title="Gerenciar Usuários"
+                size="lg"
+            >
+                {loadingUsers ? (
+                    <div className="space-y-2">
+                        <LoadingSkeleton height={60} />
+                        <LoadingSkeleton height={60} />
+                        <LoadingSkeleton height={60} />
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        {users.map(u => (
+                            <div key={u.id} className="flex items-center justify-between gap-3 p-3 bg-carbon border border-glass-border rounded hover:border-gold transition-colors">
+                                <div className="flex items-center gap-3 flex-1">
+                                    <div className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-gold font-bold">
+                                        {u.nome?.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-bold text-white flex items-center gap-2">
+                                            {u.nome}
+                                            {u.role === 'admin' && <Badge variant="gold">ADMIN</Badge>}
+                                        </div>
+                                        <div className="text-xs text-gray-500">{u.email}</div>
+                                        <div className="text-xs text-gray-600">{u.moto_atual || 'Sem moto cadastrada'}</div>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    {u.role === 'admin' ? (
+                                        <Button size="small" variant="secondary" onClick={() => handleDemoteUser(u.id, u.nome)}>
+                                            ⬇️ Despromover
+                                        </Button>
+                                    ) : (
+                                        <Button size="small" variant="secondary" onClick={() => handlePromoteUser(u.id, u.nome)}>
+                                            ⚡ Promover
+                                        </Button>
+                                    )}
+                                    <Button size="small" variant="danger" onClick={() => handleDeleteUser(u.id, u.nome)}>
+                                        🗑️
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                        {users.length === 0 && <p className="text-center text-gray-500 py-8">Nenhum usuário encontrado.</p>}
+                    </div>
+                )}
             </Modal>
         </div>
     );

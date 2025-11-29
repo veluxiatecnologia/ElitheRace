@@ -30,6 +30,7 @@ const isAdmin = async (req, res, next) => {
 
 router.get('/', isAdmin, userController.getAllUsers);
 router.put('/:id/promote', isAdmin, userController.promoteUser);
+router.put('/:id/demote', isAdmin, userController.demoteUser);
 router.delete('/:id', isAdmin, userController.deleteUser);
 
 module.exports = router;
