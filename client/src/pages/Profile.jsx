@@ -144,6 +144,32 @@ const Profile = () => {
         }
     };
 
+    const formatPhoneNumber = (value) => {
+        // Remove all non-digit characters
+        const numbers = value.replace(/\D/g, '');
+
+        // Limit to 11 digits (Brazilian phone format)
+        const limited = numbers.substring(0, 11);
+
+        // Apply mask: (XX) XXXXX-XXXX or (XX) XXXX-XXXX
+        if (limited.length <= 10) {
+            // Format: (XX) XXXX-XXXX
+            return limited
+                .replace(/^(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{4})(\d)/, '$1-$2');
+        } else {
+            // Format: (XX) XXXXX-XXXX
+            return limited
+                .replace(/^(\d{2})(\d)/, '($1) $2')
+                .replace(/(\d{5})(\d)/, '$1-$2');
+        }
+    };
+
+    const handlePhoneChange = (e) => {
+        const formatted = formatPhoneNumber(e.target.value);
+        setEditData({ ...editData, telefone: formatted });
+    };
+
     const handleEditToggle = () => {
         if (isEditing) {
             setEditData(profileData);
@@ -267,9 +293,10 @@ const Profile = () => {
                             <Input
                                 label="Telefone"
                                 value={editData.telefone}
-                                onChange={(e) => setEditData({ ...editData, telefone: e.target.value })}
+                                onChange={handlePhoneChange}
                                 icon="📱"
                                 placeholder="(11) 99999-9999"
+                                maxLength={15}
                             />
                             <Input
                                 label="Data de Nascimento"
