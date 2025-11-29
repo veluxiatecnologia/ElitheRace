@@ -424,7 +424,8 @@ const AdminDashboard = () => {
                 .replace(/{PEDAGIOS}/g, event.pedagios || '')
                 .replace(/{LISTA_PES}/g, pesList)
                 .replace(/{LISTA_CONFIRMADOS}/g, confList)
-                .replace(/{NOME_EVENTO}/g, event.nome);
+                .replace(/{NOME_EVENTO}/g, event.nome)
+                .replace(/{NOME}/g, event.nome);
 
             setWhatsappText(text);
             setIsWhatsappModalOpen(true);
@@ -653,7 +654,7 @@ const AdminDashboard = () => {
             >
                 <div className="form-group">
                     <label className="block text-gold font-bold mb-2">Template WhatsApp</label>
-                    <p className="text-xs text-gray-400 mb-2">Variáveis: {'{DESTINO}'}, {'{DATA}'}, {'{LINK_INSCRICAO}'}, {'{LINK_MAPS_DESTINO}'}, {'{PEDAGIOS}'}, {'{LISTA_PES}'}, {'{LISTA_CONFIRMADOS}'}</p>
+                    <p className="text-xs text-gray-400 mb-2">Variáveis: {'{NOME}'}, {'{DESTINO}'}, {'{DATA}'}, {'{LINK_INSCRICAO}'}, {'{LINK_MAPS_DESTINO}'}, {'{PEDAGIOS}'}, {'{LISTA_PES}'}, {'{LISTA_CONFIRMADOS}'}</p>
                     <textarea
                         value={whatsappTemplate}
                         onChange={(e) => setWhatsappTemplate(e.target.value)}
