@@ -72,7 +72,7 @@ const AdminDashboard = () => {
     const fetchEvents = async () => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${API_URL}/api/events`, { headers });
+            const res = await fetch(API_URL + '/api/events', { headers });
             const data = await res.json();
             setEvents(data);
         } catch (error) {
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
 
     const fetchPeTemplates = async () => {
         try {
-            const res = await fetch(`${API_URL} / api / pe - templates');
+            const res = await fetch(API_URL + '/api/pe-templates');
             const data = await res.json();
             setPeTemplates(data);
         } catch (error) {
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
         setUploading(true);
         try {
             const fileExt = bannerFile.name.split('.').pop();
-            const fileName = `${ Date.now() } - ${ Math.random().toString(36).substring(7) }.${ fileExt }`;
+            const fileName = Date.now() + "-" + Math.random().toString(36).substring(7) + "." + fileExt;
             const { error: uploadError } = await supabase.storage
                 .from('event-banners')
                 .upload(fileName, bannerFile);
@@ -174,7 +174,7 @@ const AdminDashboard = () => {
             const headers = await getAuthHeader();
             const validPes = pes.filter(pe => pe.nome_pe && pe.horario_pe);
             const method = editingEventId ? 'PUT' : 'POST';
-            const url = editingEventId ? `/ api / events / ${ editingEventId }` : '/api/events';
+            const url = editingEventId ? '/api/events/' + editingEventId : '/api/events';
 
             const res = await fetch(url, {
                 method,
@@ -225,7 +225,7 @@ const AdminDashboard = () => {
     const fetchEventPes = async (eventId) => {
         try {
             const headers = await getAuthHeader();
-            const res = await fetch(`${ API_URL } / api / events / ${ eventId } / pes`, { headers });
+            const res = await fetch(API_URL + '/api/events/' + eventId + '/pes', { headers });
             const eventPes = await res.json();
 
             // Map API fields to component state fields and match with templates
@@ -272,7 +272,7 @@ const AdminDashboard = () => {
     const toggleActive = async (id, currentStatus) => {
         try {
             const headers = await getAuthHeader();
-            await fetch(`${ API_URL } / api / events / ${ id } / active`, {
+            await fetch(API_URL + '/api/events/' + id + '/active', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', ...headers },
                 body: JSON.stringify({ ativo: !currentStatus })
@@ -288,7 +288,7 @@ const AdminDashboard = () => {
         if (!window.confirm('Tem certeza que deseja excluir este evento?')) return;
         try {
             const headers = await getAuthHeader();
-            await fetch(`${ API_URL } /api/events / ${ id } `, { method: 'DELETE', headers });
+            await fetch(API_URL + '/api/events/' + id, { method: 'DELETE', headers });
             fetchEvents();
     toast.success('Evento excluído');
 } catch (error) {
@@ -348,7 +348,7 @@ const openSettingsModal = async () => {
     setIsSettingsModalOpen(true);
     try {
         const headers = await getAuthHeader();
-        const res = await fetch(`${ API_URL } /api/settings / whatsapp - template`, { headers });
+        const res = await fetch(API_URL + '/api/settings/whatsapp-template', { headers });
         const data = await res.json();
         setWhatsappTemplate(data.template || '');
     } catch (error) {
@@ -359,7 +359,7 @@ const openSettingsModal = async () => {
 const saveWhatsAppTemplate = async () => {
     try {
         const headers = await getAuthHeader();
-        await fetch(`${ API_URL } /api/settings / whatsapp - template`, {
+        await fetch(API_URL + '/api/settings/whatsapp-template', {
                 method: 'PUT',
                 headers: { ...headers, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ template: whatsappTemplate })
@@ -376,10 +376,10 @@ const generateWhatsapp = async (id) => {
     try {
         const headers = await getAuthHeader();
         const [eventRes, pesRes, confRes, templateRes] = await Promise.all([
-            fetch(`${ API_URL } /api/events / ${ id } `, { headers }),
-            fetch(`${ API_URL } /api/events / ${ id }/pes`, { headers }),
-        fetch(`${API_URL}/api/events/${id}/confirmations`, { headers }),
-            fetch(`${API_URL}/api/settings/whatsapp-template`, { headers })
+            fetch(API_URL + '/api/events/' + id, { headers }),
+            fetch(API_URL + '/api/events/' + id + '/pes', { headers }),
+            fetch(API_URL + '/api/events/' + id + '/confirmations', { headers }),
+            fetch(API_URL + '/api/settings/whatsapp-template', { headers })
             ]);
 
 const event = await eventRes.json();
@@ -391,7 +391,7 @@ let template = templateData.template;
 if (!template) throw new Error('Template não configurado');
 
 // Fetch PE Templates to map destination IDs to names
-const peTemplatesRes = await fetch(`${API_URL}/api/pe-templates`, { headers });
+const peTemplatesRes = await fetch(API_URL + '/api/pe-templates', { headers });
 const peTemplates = await peTemplatesRes.json();
 
 // Create a map of PE Template IDs to names for destination lookup
