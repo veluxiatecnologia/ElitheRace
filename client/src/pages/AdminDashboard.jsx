@@ -794,7 +794,8 @@ const AdminDashboard = () => {
                             <div key={u.id} className="event-card">
                                 <div className="event-info">
                                     <div className="event-header" style={{ alignItems: 'flex-start' }}>
-                                        <div style={{
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{
                                                 width: '48px',
                                                 height: '48px',
                                                 borderRadius: '50%',
@@ -849,17 +850,16 @@ const AdminDashboard = () => {
                                     </Button>
                                 </div>
                             </div>
-                ))}
-                {users.length === 0 && (
-                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
-                        Nenhum usuário encontrado.
+                        ))}
+                        {users.length === 0 && (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
+                                Nenhum usuário encontrado.
+                            </div>
+                        )}
                     </div>
                 )}
+            </Modal>
         </div>
-    )
-}
-            </Modal >
-        </div >
     );
 };
 
