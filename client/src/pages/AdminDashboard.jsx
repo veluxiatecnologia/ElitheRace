@@ -794,21 +794,33 @@ const AdminDashboard = () => {
                             <div key={u.id} className="event-card">
                                 <div className="event-info">
                                     <div className="event-header" style={{ alignItems: 'flex-start' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div style={{
+                                        <div style={{
                                                 width: '48px',
                                                 height: '48px',
                                                 borderRadius: '50%',
-                                                background: 'linear-gradient(135deg, #d4af37 0%, #f4d46f 100%)',
+                                                background: u.avatar_url ? 'transparent' : 'linear-gradient(135deg, #d4af37 0%, #f4d46f 100%)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 fontSize: '20px',
                                                 fontWeight: 'bold',
                                                 color: '#1a1a1a',
-                                                flexShrink: 0
+                                                flexShrink: 0,
+                                                overflow: 'hidden'
                                             }}>
-                                                {u.nome?.charAt(0).toUpperCase()}
+                                                {u.avatar_url ? (
+                                                    <img
+                                                        src={u.avatar_url}
+                                                        alt={u.nome}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    u.nome?.charAt(0).toUpperCase()
+                                                )}
                                             </div>
                                             <div>
                                                 <h3 className="event-name" style={{ marginBottom: '4px' }}>{u.nome}</h3>
@@ -837,16 +849,17 @@ const AdminDashboard = () => {
                                     </Button>
                                 </div>
                             </div>
-                        ))}
-                        {users.length === 0 && (
-                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
-                                Nenhum usuário encontrado.
-                            </div>
-                        )}
+                ))}
+                {users.length === 0 && (
+                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
+                        Nenhum usuário encontrado.
                     </div>
                 )}
-            </Modal>
         </div>
+    )
+}
+            </Modal >
+        </div >
     );
 };
 
