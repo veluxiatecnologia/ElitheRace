@@ -82,38 +82,38 @@ const userController = {
             console.error('Error deleting user:', error);
             res.status(500).json({ error: 'Erro ao excluir usuário' });
         }
-    }
-};
+    },
 
-// Demote a user to member
-exports.demoteUser = async (req, res) => {
-    const { id } = req.params;
+    // Demote user to member
+    demoteUser: async (req, res) => {
+        const { id } = req.params;
 
-    try {
-        if (!supabaseAdmin) {
-            throw new Error('SUPABASE_SERVICE_ROLE_KEY não configurada');
+        try {
+            if (!supabaseAdmin) {
+                return res.status(503).json({ error: 'Funcionalidade indisponível: Chave de serviço não configurada' });
+            }
+
+            // 1. Update Profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ role: 'member' })
+                .eq('id', id);
+
+            if (profileError) throw profileError;
+
+            // 2. Update Supabase Auth Metadata
+            const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+                id,
+                { user_metadata: { role: 'member' } }
+            );
+
+            if (authError) throw authError;
+
+            res.json({ message: 'Usuário despromovido com sucesso' });
+        } catch (error) {
+            console.error('Erro ao despromover usuário:', error);
+            res.status(500).json({ error: error.message || 'Erro ao despromover usuário' });
         }
-
-        // 1. Update Profile
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({ role: 'member' })
-            .eq('id', id);
-
-        if (profileError) throw profileError;
-
-        // 2. Update Supabase Auth Metadata
-        const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
-            id,
-            { user_metadata: { role: 'member' } }
-        );
-
-        if (authError) throw authError;
-
-        res.json({ message: 'Usuário despromovido com sucesso' });
-    } catch (error) {
-        console.error('Erro ao despromover usuário:', error);
-        res.status(500).json({ error: error.message || 'Erro ao despromover usuário' });
     }
 };
 
