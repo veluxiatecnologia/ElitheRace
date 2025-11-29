@@ -42,6 +42,17 @@ function App() {
                             </Routes>
                         </div>
                         <footer style={{ textAlign: 'center', padding: '20px', color: '#666', fontSize: '0.9rem' }}>
+                            <div style={{ marginBottom: '10px' }}>
+                                <a
+                                    href="https://instagram.com/elitheracingteam"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#E1306C', textDecoration: 'none', fontSize: '1.5rem' }}
+                                    aria-label="Instagram"
+                                >
+                                    📷 Instagram
+                                </a>
+                            </div>
                             "Se é estrada, é lar. Se é Elithe, é família."
                         </footer>
                     </SkeletonTheme>
