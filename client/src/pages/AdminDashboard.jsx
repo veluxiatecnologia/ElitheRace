@@ -296,6 +296,22 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleCreateEvent = () => {
+        openEventModal();
+    };
+
+    const handleEditEvent = (event) => {
+        openEventModal(event);
+    };
+
+    const handleActivateEvent = (id) => {
+        toggleActive(id, false);
+    };
+
+    const handleDeleteEvent = (id) => {
+        deleteEvent(id);
+    };
+
     // --- PE Manager ---
 
     const handleCreatePeTemplate = async (e) => {
@@ -343,6 +359,18 @@ const AdminDashboard = () => {
     };
 
     // --- WhatsApp ---
+
+    const fetchWhatsappTemplate = async () => {
+        try {
+            const headers = await getAuthHeader();
+            const res = await fetch(API_URL + '/api/settings/whatsapp-template', { headers });
+            const data = await res.json();
+            setWhatsappTemplate(data.template || '');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao carregar template');
+        }
+    };
 
     const openSettingsModal = async () => {
         setIsSettingsModalOpen(true);
