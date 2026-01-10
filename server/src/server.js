@@ -10,11 +10,13 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 const allowedOrigins = [
+    'https://elithe-race.up.railway.app',
     'https://elitherace.com.br',
     'https://www.elitherace.com.br',
     'http://localhost:5173',
-    'http://localhost:3000'
-];
+    'http://localhost:3000',
+    process.env.FRONTEND_URL
+].filter(Boolean);
 
 app.use(cors({
     origin: allowedOrigins,
