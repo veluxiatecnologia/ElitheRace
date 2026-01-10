@@ -96,7 +96,7 @@ const Home = () => {
         const confirmPromise = new Promise(async (resolve, reject) => {
             try {
                 const headers = await getAuthHeader();
-                const res = await fetch(`${API_URL} / api / events / ${event.id} / attend`, {
+                const res = await fetch(`${API_URL}/api/events/${event.id}/attend`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
