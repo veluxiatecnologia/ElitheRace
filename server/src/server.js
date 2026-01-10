@@ -15,7 +15,8 @@ const allowedOrigins = [
     'https://www.elitherace.com.br',
     'http://localhost:5173',
     'http://localhost:3000',
-    process.env.FRONTEND_URL
+    process.env.FRONTEND_URL,
+    /\.vercel\.app$/
 ].filter(Boolean);
 
 app.use(cors({
