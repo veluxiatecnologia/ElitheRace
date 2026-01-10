@@ -12,5 +12,16 @@ export default defineConfig({
                 secure: false,
             }
         }
+    },
+    build: {
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom', '@supabase/supabase-js'],
+                    utils: ['html5-qrcode', 'react-hot-toast', 'react-loading-skeleton']
+                }
+            }
+        }
     }
 })
