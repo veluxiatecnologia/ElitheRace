@@ -38,8 +38,8 @@ Este guia orienta o deploy do Elithe Racing em produção:
    
    ```bash
    PORT=3000
-   SUPABASE_URL=https://qzsimgtlhaebdtljyozt.supabase.co
-   SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6c2ltZ3RsaGFlYmR0bGp5b3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3NDg2OTAsImV4cCI6MjA3OTMyNDY5MH0.BmpdtrReuRkAo6QzZB4aSrFWbdVaWePz8WdhlAPD-d0
+   SUPABASE_URL=https://sua-url-do-supabase.supabase.co
+   SUPABASE_KEY=sua-chave-anon-publica-do-supabase
    FRONTEND_URL=https://seu-app.vercel.app
    ```
    
@@ -81,8 +81,8 @@ Este guia orienta o deploy do Elithe Racing em produção:
    Clique em **Environment Variables** e adicione:
    
    ```bash
-   VITE_SUPABASE_URL=https://qzsimgtlhaebdtljyozt.supabase.co
-   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6c2ltZ3RsaGFlYmR0bGp5b3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3NDg2OTAsImV4cCI6MjA3OTMyNDY5MH0.BmpdtrReuRkAo6QzZB4aSrFWbdVaWePz8WdhlAPD-d0
+   VITE_SUPABASE_URL=https://sua-url-do-supabase.supabase.co
+   VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica-do-supabase
    VITE_API_URL=https://SUA-URL-DO-RAILWAY.up.railway.app
    ```
    

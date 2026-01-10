@@ -35,4 +35,7 @@ build/
 # Temporary files
 tmp/
 temp/
-*.tmp
+# Sensitive/Test Scripts
+test_*.js
+reset_*.js
+
