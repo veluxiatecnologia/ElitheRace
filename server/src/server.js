@@ -1,13 +1,29 @@
 const express = require('express');
+const Sentry = require('@sentry/node');
+const { nodeProfilingIntegration } = require('@sentry/profiling-node');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
-// const { initDb } = require('./db');
 
 dotenv.config();
 
+if (process.env.SENTRY_DSN) {
+    Sentry.init({
+        dsn: process.env.SENTRY_DSN,
+        integrations: [
+            nodeProfilingIntegration(),
+        ],
+        tracesSampleRate: 1.0,
+        profilesSampleRate: 1.0,
+    });
+}
+
 const app = express();
+
+// Sentry Request Handler must be the first middleware on the app
+Sentry.setupExpressErrorHandler(app);
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware

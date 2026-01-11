@@ -13,10 +13,15 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CheckInScanner from './pages/CheckInScanner';
 import Timeline from './pages/Timeline';
+import Timeline from './pages/Timeline';
 import EventGallery from './pages/EventGallery';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import { Toaster } from 'react-hot-toast';
 
 import { SkeletonTheme } from 'react-loading-skeleton';
+
+import OfflineNotice from './components/OfflineNotice';
 
 function App() {
     return (
@@ -24,6 +29,7 @@ function App() {
             <AuthProvider>
                 <ProfileProvider>
                     <SkeletonTheme baseColor="#2a2a2a" highlightColor="#3a3a3a">
+                        <OfflineNotice />
                         <Navbar />
                         <Toaster position="top-right" reverseOrder={false} />
                         <div style={{ paddingBottom: '50px' }}>
@@ -39,6 +45,8 @@ function App() {
                                 <Route path="/admin/checkin-scanner" element={<CheckInScanner />} />
                                 <Route path="/timeline" element={<Timeline />} />
                                 <Route path="/gallery/:eventId" element={<EventGallery />} />
+                                <Route path="/terms" element={<Terms />} />
+                                <Route path="/privacy" element={<Privacy />} />
                             </Routes>
                         </div>
                         <footer style={{ textAlign: 'center', padding: '20px', color: '#666', fontSize: '0.9rem' }}>
@@ -65,6 +73,10 @@ function App() {
                             "Se é estrada, é lar. Se é Elithe, é família."
                             <div style={{ marginTop: '10px', fontSize: '0.75rem', color: '#888' }}>
                                 © 2025 Veluxia.com.br - Todos os direitos reservados.
+                            </div>
+                            <div style={{ marginTop: '5px', fontSize: '0.7rem' }}>
+                                <a href="/terms" style={{ color: '#666', textDecoration: 'none', marginRight: '10px' }}>Termos de Uso</a>
+                                <a href="/privacy" style={{ color: '#666', textDecoration: 'none' }}>Política de Privacidade</a>
                             </div>
                         </footer>
                     </SkeletonTheme>
