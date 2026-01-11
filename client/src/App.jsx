@@ -13,7 +13,6 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CheckInScanner from './pages/CheckInScanner';
 import Timeline from './pages/Timeline';
-import Timeline from './pages/Timeline';
 import EventGallery from './pages/EventGallery';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
