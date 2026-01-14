@@ -298,82 +298,77 @@ const Profile = () => {
                 </div>
             </div>
 
-            {/* GAMIFICATION STATS - NEW PHASE 3 */}
-            <div className="bg-gradient-to-r from-[#1a1c20] to-black rounded-xl border border-glass-border shadow-lg p-5 mb-6">
-                <div className="flex items-center gap-5">
+            {/* Main Content Container */}
+            <div className="max-w-4xl mx-auto px-4 -mt-10 relative z-10 pb-20">
 
-                    {/* Left: Level Badge (Fixed Width) */}
-                    <div className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-full border-2 border-gold flex items-center justify-center bg-black/50 shadow-[0_0_10px_rgba(255,215,0,0.2)]">
-                            <div className="text-center leading-tight">
-                                <div className="text-[9px] text-gray-500 font-bold uppercase">LEVEL</div>
-                                <div className="text-2xl font-oxanium font-bold text-white">{profileData.level || 1}</div>
+                {/* GAMIFICATION STATS - Horizontal Card */}
+                <div className="bg-gradient-to-r from-[#1a1c20] to-black rounded-xl border border-glass-border shadow-lg p-5 mb-6">
+                    <div className="flex flex-row items-center gap-5">
+
+                        {/* Left: Level Badge */}
+                        <div className="flex-shrink-0">
+                            <div className="w-16 h-16 rounded-full border-2 border-gold flex items-center justify-center bg-black/50 shadow-[0_0_10px_rgba(255,215,0,0.2)]">
+                                <div className="text-center leading-tight">
+                                    <div className="text-[9px] text-gray-500 font-bold uppercase">LEVEL</div>
+                                    <div className="text-2xl font-oxanium font-bold text-white leading-none">{profileData.level || 1}</div>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Right: Progress Info */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <div className="flex justify-between items-end mb-1">
+                                <h3 className="text-base font-bold text-white uppercase tracking-wide truncate">Sua Jornada</h3>
+                                <span className="text-xs text-gold font-bold whitespace-nowrap ml-2">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-1">
+                                <div
+                                    className="h-full bg-gradient-to-r from-gold to-yellow-600"
+                                    style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
+                                ></div>
+                            </div>
+
+                            <div className="text-[10px] text-gray-400 text-right">
+                                Faltam <span className="text-white font-semibold">{(1000 - ((profileData.xp || 0) % 1000))} XP</span> para o próximo nível
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* Right: Progress Info (Flexible) */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-baseline mb-1">
-                            <h3 className="text-base font-bold text-white uppercase tracking-wide truncate pr-2">Sua Jornada</h3>
-                            <span className="text-xs text-gold font-bold whitespace-nowrap">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
+                    {/* Medals Grid (if any) */}
+                    {userMedals.length > 0 && (
+                        <div className="mt-4 border-t border-gray-800 pt-3">
+                            <h4 className="text-[10px] text-gray-500 font-bold uppercase mb-2">Medalhas</h4>
+                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                {userMedals.map(medal => (
+                                    <div key={medal.id} className="flex-shrink-0 text-center" title={medal.name}>
+                                        <div className="text-2xl filter drop-shadow-md mb-1 hover:scale-110 transition-transform cursor-help">
+                                            {medal.icon_url}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                    )}
 
-                        {/* Progress Bar */}
-                        <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-2">
-                            <div
-                                className="h-full bg-gradient-to-r from-gold to-yellow-600"
-                                style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
-                            ></div>
-                        </div>
-
-                        <div className="text-[10px] text-gray-400 text-right">
-                            Próximo nível em <span className="text-gray-300 font-semibold">{(1000 - ((profileData.xp || 0) % 1000))} XP</span>
-                        </div>
-                    </div>
-
+                    <Link to="/ranking" className="block mt-2 text-center text-xs text-gold hover:underline opacity-80">
+                        Ver Ranking Global →
+                    </Link>
                 </div>
 
-                {/* Medals Grid */}
-                {userMedals.length > 0 && (
-                    <div className="mt-6 border-t border-gray-800 pt-4">
-                        <h4 className="text-xs text-gray-400 font-bold uppercase mb-3">Medalhas Conquistadas</h4>
-                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                            {userMedals.map(medal => (
-                                <div key={medal.id} className="flex-shrink-0 w-16 text-center group relative cursor-help">
-                                    <div className="text-3xl filter drop-shadow-lg mb-1 transform group-hover:scale-110 transition-transform">
-                                        {medal.icon_url}
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 truncate w-full">{medal.name}</div>
+                {/* Member Card Section */}
+                <div className="mb-6">
+                    <MemberCard user={user} profileData={profileData} />
+                    <p className="text-center text-gray-500 text-xs mt-2">Toque no cartão para ver seu QR Code</p>
+                </div>
 
-                                    {/* Tooltip */}
-                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 bg-black/90 border border-gray-700 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                                        <div className="font-bold text-gold">{medal.name}</div>
-                                        <div>{medal.description}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                <Link to="/ranking" className="block mt-4 text-center text-sm text-gold hover:underline">
-                    Ver Ranking Global →
-                </Link>
-            </div>
-            {/* END GAMIFICATION STATS */}
-
-            {/* Member Card */}
-            <div className="mb-6">
-                <MemberCard user={user} profileData={profileData} />
-                <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
-            </div>
-
-            {/* Edit Form */}
-            {
-                isEditing && (
-                    <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
-                        <div className="edit-form-grid">
+                {/* Editor Form (if editing) */}
+                {isEditing && (
+                    <div className="mb-6 bg-carbon-lighter border border-glass-border rounded-xl p-6">
+                        <h3 className="text-lg font-bold text-white mb-4">Editar Informações</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Input
                                 label="Nome Completo"
                                 value={editData.nome}
@@ -409,71 +404,75 @@ const Profile = () => {
                                 onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
                                 icon="🏍️"
                                 placeholder="Ex: Honda CB 500X"
+                                className="md:col-span-2"
                             />
                         </div>
-                    </FormCard>
-                )
-            }
-
-            {/* Stats Grid */}
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="stat-icon">🏁</div>
-                    <div className="stat-label">Rolês</div>
-                    <div className="stat-value">{profileData.participacoes_totais}</div>
-                </div>
-
-                <div className="stat-card highlight">
-                    <div className="stat-icon">⭐</div>
-                    <div className="stat-label">Estrelinhas</div>
-                    <div className="stat-value">{profileData.estrelinhas}</div>
-                    <div className="stat-subtext">
-                        Próxima em {4 - (profileData.participacoes_totais % 4)} rolês
-                    </div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-icon">🏍️</div>
-                    <div className="stat-label">Máquina</div>
-                    <div className="stat-value text-lg truncate">
-                        {profileData.moto_atual || '---'}
-                    </div>
-                </div>
-            </div>
-
-            {/* History Section */}
-            <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
-                {history.length === 0 ? (
-                    <div className="text-center py-8">
-                        <div className="text-4xl mb-4 opacity-50">🏁</div>
-                        <p className="text-muted">Você ainda não participou de nenhum evento.</p>
-                        <Link to="/" className="text-gold hover:underline mt-2 inline-block">
-                            Ver próximo rolê →
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="history-list">
-                        {history.map((item) => (
-                            <div key={item.id} className="history-item">
-                                <div className="history-icon">🏁</div>
-                                <div className="history-info">
-                                    <h4 className="history-title">{item.evento_nome}</h4>
-                                    <div className="history-meta">
-                                        <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
-                                        <span>📍 {item.evento_destino}</span>
-                                    </div>
-                                    <div className="history-moto">
-                                        🏍️ {item.moto_dia}
-                                    </div>
-                                </div>
-                                <Badge variant="success" dot>Confirmado</Badge>
-                            </div>
-                        ))}
                     </div>
                 )}
-            </FormCard>
-        </div >
-    );
+
+                {/* Stats Grid - Using Tailwind Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-carbon-lighter border border-glass-border rounded-xl p-4 text-center hover:border-gold transition-colors">
+                        <div className="text-3xl mb-2">🏁</div>
+                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Rolês</div>
+                        <div className="text-2xl font-bold text-white">{profileData.participacoes_totais || 0}</div>
+                    </div>
+
+                    <div className="bg-carbon-lighter border border-glass-border rounded-xl p-4 text-center hover:border-gold transition-colors relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="text-3xl mb-2">⭐</div>
+                        <div className="text-xs text-gold uppercase tracking-wider font-bold mb-1">Estrelinhas</div>
+                        <div className="text-2xl font-bold text-white">{profileData.estrelinhas || 0}</div>
+                        <div className="text-[10px] text-gray-500 mt-1">Próxima em {4 - ((profileData.participacoes_totais || 0) % 4)} rolês</div>
+                    </div>
+
+                    <div className="bg-carbon-lighter border border-glass-border rounded-xl p-4 text-center hover:border-gold transition-colors">
+                        <div className="text-3xl mb-2">🏍️</div>
+                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Máquina</div>
+                        <div className="text-lg font-bold text-white truncate px-2">
+                            {profileData.moto_atual || '---'}
+                        </div>
+                    </div>
+                </div>
+
+                {/* History Section */}
+                <div className="bg-carbon-lighter border border-glass-border rounded-xl p-6">
+                    <div className="mb-4">
+                        <h3 className="text-lg font-bold text-white">Histórico de Estrada</h3>
+                        <p className="text-xs text-gray-500">Seus rolês com a família Elithe</p>
+                    </div>
+
+                    {history.length === 0 ? (
+                        <div className="text-center py-8 bg-black/20 rounded-lg">
+                            <div className="text-4xl mb-3 opacity-30 grayscale">🏁</div>
+                            <p className="text-gray-500 text-sm">Você ainda não participou de nenhum evento.</p>
+                            <Link to="/" className="text-gold font-bold text-sm hover:underline mt-2 inline-block">
+                                Ver próximo rolê →
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {history.map((item) => (
+                                <div key={item.id} className="bg-black/30 border border-glass-border rounded-lg p-3 flex items-center gap-3 hover:border-gold/50 transition-colors">
+                                    <div className="w-10 h-10 rounded-full bg-carbon flex items-center justify-center text-xl flex-shrink-0">
+                                        🏁
+                                    </div>
+                                    <div className="flex-1 min-w-0 text-left">
+                                        <h4 className="font-bold text-white text-sm truncate">{item.evento_nome}</h4>
+                                        <div className="text-xs text-gray-500 flex flex-wrap gap-x-3">
+                                            <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
+                                            <span>📍 {item.evento_destino}</span>
+                                        </div>
+                                    </div>
+                                    <Badge variant="success" dot className="hidden sm:flex">Confirmado</Badge>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+            </div>
+            );
 };
 
-export default Profile;
+            export default Profile;
