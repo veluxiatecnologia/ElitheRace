@@ -299,12 +299,15 @@ const Profile = () => {
             </div>
 
             {/* GAMIFICATION STATS - NEW PHASE 3 */}
-            <div className="bg-gradient-to-r from-gray-900 to-black rounded-xl p-8 mb-6 border border-glass-border shadow-lg relative overflow-hidden">
+            <div
+                className="bg-gradient-to-r from-gray-900 to-black rounded-xl mb-6 border border-glass-border shadow-lg relative overflow-hidden"
+                style={{ padding: '35px' }}
+            >
                 <div className="absolute top-0 right-0 p-2 opacity-20 text-6xl">🏆</div>
 
                 <div className="flex justify-between items-end mb-2 relative z-10">
                     <div>
-                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Nível Atual</span>
+                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">NÍVEL ATUAL</span>
                         <div className="text-3xl font-oxanium font-bold text-white leading-none mt-1">
                             Level {profileData.level || 1}
                         </div>

@@ -49,7 +49,7 @@ const MemberCard = ({ user, profileData }) => {
             <div className={`member-card ${flipped ? 'flipped' : ''}`}>
 
                 {/* FRONT */}
-                <div className="member-card-front">
+                <div className="member-card-front" style={{ padding: '25px' }}>
                     <div className="holographic-overlay"></div>
 
                     <div className="card-header">
