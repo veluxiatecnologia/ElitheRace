@@ -333,173 +333,174 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Member Card */}
-            <div className="mb-6">
-                <MemberCard user={user} profileData={profileData} />
-                <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
-            </div>
+                {/* Member Card */}
+                <div className="mb-6">
+                    <MemberCard user={user} profileData={profileData} />
+                    <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
+                </div>
 
-            {/* Gamification Card - Below Member Card */}
-            <div className="bg-gradient-to-r from-carbon-light to-carbon border border-glass-border rounded-xl p-6 mb-6 shadow-lg">
-                <div className="flex items-center gap-6">
-                    {/* Level Badge */}
-                    <div className="flex-shrink-0">
-                        <div className="w-20 h-20 rounded-full border-2 border-gold flex items-center justify-center bg-black/40 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                            <div className="text-center">
-                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Nível</div>
-                                <div className="text-3xl font-bold text-gold leading-none mt-1">{profileData.level || 1}</div>
+                {/* Gamification Card - Below Member Card */}
+                <div className="bg-gradient-to-r from-carbon-light to-carbon border border-glass-border rounded-xl p-6 mb-6 shadow-lg">
+                    <div className="flex items-center gap-6">
+                        {/* Level Badge */}
+                        <div className="flex-shrink-0">
+                            <div className="w-20 h-20 rounded-full border-2 border-gold flex items-center justify-center bg-black/40 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                                <div className="text-center">
+                                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Nível</div>
+                                    <div className="text-3xl font-bold text-gold leading-none mt-1">{profileData.level || 1}</div>
+                                </div>
                             </div>
+                        </div>
+
+                        {/* XP Progress */}
+                        <div className="flex-1">
+                            <div className="flex justify-between items-baseline mb-2">
+                                <h3 className="text-lg font-bold text-white">Progressão</h3>
+                                <span className="text-sm text-gold font-bold">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-2 border border-gray-700">
+                                <div
+                                    className="h-full bg-gradient-to-r from-gold via-yellow-500 to-gold transition-all duration-300"
+                                    style={{ width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%` }}
+                                ></div>
+                            </div>
+
+                            <p className="text-xs text-gray-400">
+                                Faltam <span className="text-white font-semibold">{((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP</span> para o próximo nível
+                            </p>
                         </div>
                     </div>
 
-                    {/* XP Progress */}
-                    <div className="flex-1">
-                        <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="text-lg font-bold text-white">Progressão</h3>
-                            <span className="text-sm text-gold font-bold">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
+                    {/* Medals */}
+                    {userMedals.length > 0 && (
+                        <div className="mt-5 pt-4 border-t border-glass-border">
+                            <h4 className="text-xs text-gray-400 font-bold uppercase mb-3 tracking-wide">Medalhas Conquistadas</h4>
+                            <div className="flex gap-3 overflow-x-auto pb-2">
+                                {userMedals.map(medal => (
+                                    <div key={medal.id} className="flex-shrink-0 text-center group" title={medal.description}>
+                                        <div className="text-3xl mb-1 transform group-hover:scale-125 transition-transform cursor-help">
+                                            {medal.icon_url}
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 w-16 truncate">{medal.name}</div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                    )}
 
-                        {/* Progress Bar */}
-                        <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-2 border border-gray-700">
-                            <div
-                                className="h-full bg-gradient-to-r from-gold via-yellow-500 to-gold transition-all duration-300"
-                                style={{ width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%` }}
-                            ></div>
+                    <Link to="/ranking" className="block mt-4 text-center text-sm text-gold hover:text-yellow-400 transition-colors">
+                        Ver Ranking Global →
+                    </Link>
+                </div>
+
+                {/* Edit Form */}
+                {isEditing && (
+                    <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
+                        <div className="edit-form-grid">
+                            <Input
+                                label="Nome Completo"
+                                value={editData.nome}
+                                onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
+                                icon="👤"
+                            />
+                            <Input
+                                label="Telefone"
+                                value={editData.telefone}
+                                onChange={handlePhoneChange}
+                                icon="📱"
+                                placeholder="(11) 99999-9999"
+                                maxLength={15}
+                            />
+                            <Input
+                                label="Data de Nascimento"
+                                type="date"
+                                value={editData.data_nascimento}
+                                onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
+                                icon="📅"
+                            />
+                            <Input
+                                label="Tipo Sanguíneo"
+                                value={editData.tipo_sanguineo}
+                                onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
+                                icon="🩸"
+                                placeholder="Ex: O+"
+                                maxLength={3}
+                            />
+                            <Input
+                                label="Moto Atual"
+                                value={editData.moto_atual}
+                                onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
+                                icon="🏍️"
+                                placeholder="Ex: Honda CB 500X"
+                            />
                         </div>
+                    </FormCard>
+                )}
 
-                        <p className="text-xs text-gray-400">
-                            Faltam <span className="text-white font-semibold">{((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP</span> para o próximo nível
-                        </p>
+                {/* Stats Grid */}
+                <div className="stats-grid">
+                    <div className="stat-card">
+                        <div className="stat-icon">🏁</div>
+                        <div className="stat-label">Rolês</div>
+                        <div className="stat-value">{profileData.participacoes_totais || 0}</div>
+                    </div>
+
+                    <div className="stat-card highlight">
+                        <div className="stat-icon">⭐</div>
+                        <div className="stat-label">Estrelinhas</div>
+                        <div className="stat-value">{profileData.estrelinhas || 0}</div>
+                        <div className="stat-subtext">
+                            Próxima em {4 - ((profileData.participacoes_totais || 0) % 4)} rolês
+                        </div>
+                    </div>
+
+                    <div className="stat-card">
+                        <div className="stat-icon">🏍️</div>
+                        <div className="stat-label">Máquina</div>
+                        <div className="stat-value text-lg truncate">
+                            {profileData.moto_atual || '---'}
+                        </div>
                     </div>
                 </div>
 
-                {/* Medals */}
-                {userMedals.length > 0 && (
-                    <div className="mt-5 pt-4 border-t border-glass-border">
-                        <h4 className="text-xs text-gray-400 font-bold uppercase mb-3 tracking-wide">Medalhas Conquistadas</h4>
-                        <div className="flex gap-3 overflow-x-auto pb-2">
-                            {userMedals.map(medal => (
-                                <div key={medal.id} className="flex-shrink-0 text-center group" title={medal.description}>
-                                    <div className="text-3xl mb-1 transform group-hover:scale-125 transition-transform cursor-help">
-                                        {medal.icon_url}
+                {/* History Section */}
+                <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
+                    {history.length === 0 ? (
+                        <div className="text-center py-8">
+                            <div className="text-4xl mb-4 opacity-50">🏁</div>
+                            <p className="text-muted">Você ainda não participou de nenhum evento.</p>
+                            <Link to="/" className="text-gold hover:underline mt-2 inline-block">
+                                Ver próximo rolê →
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="history-list">
+                            {history.map((item) => (
+                                <div key={item.id} className="history-item">
+                                    <div className="history-icon">🏁</div>
+                                    <div className="history-info">
+                                        <h4 className="history-title">{item.evento_nome}</h4>
+                                        <div className="history-meta">
+                                            <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
+                                            <span>📍 {item.evento_destino}</span>
+                                        </div>
+                                        <div className="history-moto">
+                                            🏍️ {item.moto_dia}
+                                        </div>
                                     </div>
-                                    <div className="text-[10px] text-gray-500 w-16 truncate">{medal.name}</div>
+                                    <Badge variant="success" dot>Confirmado</Badge>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                )}
-
-                <Link to="/ranking" className="block mt-4 text-center text-sm text-gold hover:text-yellow-400 transition-colors">
-                    Ver Ranking Global →
-                </Link>
-            </div>
-
-            {/* Edit Form */}
-            {isEditing && (
-                <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
-                    <div className="edit-form-grid">
-                        <Input
-                            label="Nome Completo"
-                            value={editData.nome}
-                            onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
-                            icon="👤"
-                        />
-                        <Input
-                            label="Telefone"
-                            value={editData.telefone}
-                            onChange={handlePhoneChange}
-                            icon="📱"
-                            placeholder="(11) 99999-9999"
-                            maxLength={15}
-                        />
-                        <Input
-                            label="Data de Nascimento"
-                            type="date"
-                            value={editData.data_nascimento}
-                            onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
-                            icon="📅"
-                        />
-                        <Input
-                            label="Tipo Sanguíneo"
-                            value={editData.tipo_sanguineo}
-                            onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
-                            icon="🩸"
-                            placeholder="Ex: O+"
-                            maxLength={3}
-                        />
-                        <Input
-                            label="Moto Atual"
-                            value={editData.moto_atual}
-                            onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
-                            icon="🏍️"
-                            placeholder="Ex: Honda CB 500X"
-                        />
-                    </div>
+                    )}
                 </FormCard>
-            )}
-
-            {/* Stats Grid */}
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="stat-icon">🏁</div>
-                    <div className="stat-label">Rolês</div>
-                    <div className="stat-value">{profileData.participacoes_totais || 0}</div>
-                </div>
-
-                <div className="stat-card highlight">
-                    <div className="stat-icon">⭐</div>
-                    <div className="stat-label">Estrelinhas</div>
-                    <div className="stat-value">{profileData.estrelinhas || 0}</div>
-                    <div className="stat-subtext">
-                        Próxima em {4 - ((profileData.participacoes_totais || 0) % 4)} rolês
-                    </div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-icon">🏍️</div>
-                    <div className="stat-label">Máquina</div>
-                    <div className="stat-value text-lg truncate">
-                        {profileData.moto_atual || '---'}
-                    </div>
-                </div>
             </div>
-
-            {/* History Section */}
-            <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
-                {history.length === 0 ? (
-                    <div className="text-center py-8">
-                        <div className="text-4xl mb-4 opacity-50">🏁</div>
-                        <p className="text-muted">Você ainda não participou de nenhum evento.</p>
-                        <Link to="/" className="text-gold hover:underline mt-2 inline-block">
-                            Ver próximo rolê →
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="history-list">
-                        {history.map((item) => (
-                            <div key={item.id} className="history-item">
-                                <div className="history-icon">🏁</div>
-                                <div className="history-info">
-                                    <h4 className="history-title">{item.evento_nome}</h4>
-                                    <div className="history-meta">
-                                        <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
-                                        <span>📍 {item.evento_destino}</span>
-                                    </div>
-                                    <div className="history-moto">
-                                        🏍️ {item.moto_dia}
-                                    </div>
-                                </div>
-                                <Badge variant="success" dot>Confirmado</Badge>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </FormCard>
         </div>
     );
 };
 
 export default Profile;
+
