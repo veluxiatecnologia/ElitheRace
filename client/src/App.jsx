@@ -14,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 import CheckInScanner from './pages/CheckInScanner';
 import Timeline from './pages/Timeline';
 import EventGallery from './pages/EventGallery';
+import Ranking from './pages/Ranking';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import { Toaster } from 'react-hot-toast';
@@ -44,6 +45,7 @@ function App() {
                                     <Route path="/admin/analytics" element={<Analytics />} />
                                     <Route path="/admin/checkin-scanner" element={<CheckInScanner />} />
                                     <Route path="/timeline" element={<Timeline />} />
+                                    <Route path="/ranking" element={<Ranking />} />
                                     <Route path="/gallery/:eventId" element={<EventGallery />} />
                                     <Route path="/terms" element={<Terms />} />
                                     <Route path="/privacy" element={<Privacy />} />

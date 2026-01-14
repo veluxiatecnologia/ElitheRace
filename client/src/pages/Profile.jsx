@@ -36,6 +36,7 @@ const Profile = () => {
         estrelinhas: 0
     });
 
+    const [userMedals, setUserMedals] = useState([]);
     const [editData, setEditData] = useState({});
 
     useEffect(() => {
@@ -70,13 +71,24 @@ const Profile = () => {
                 tipo_sanguineo: profile.tipo_sanguineo || '',
                 avatar_url: profile.avatar_url || '',
                 participacoes_totais: profile.participacoes_totais || 0,
-                estrelinhas: profile.estrelinhas || 0
+                estrelinhas: profile.estrelinhas || 0,
+                xp: profile.xp || 0,
+                level: profile.level || 1,
+                checkins_count: profile.checkins_count || 0
             };
 
             setProfileData(profileInfo);
             setEditData(profileInfo);
 
             const headers = await getAuthHeader();
+
+            // Get Medals
+            const resMedals = await fetch(`${API_URL}/api/ranking/${user.id}/medals`, { headers });
+            if (resMedals.ok) {
+                const medalsData = await resMedals.json();
+                setUserMedals(medalsData);
+            }
+
             const resHistory = await fetch(`${API_URL}/api/events/history`, { headers });
             const historyData = await resHistory.json();
             setHistory(historyData);
@@ -284,115 +296,169 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Member Card */}
-                <div className="mb-6">
-                    <MemberCard user={user} profileData={profileData} />
-                    <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
-                </div>
+            {/* GAMIFICATION STATS - NEW PHASE 3 */}
+            <div className="bg-gradient-to-r from-gray-900 to-black rounded-xl p-4 mb-6 border border-glass-border shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-2 opacity-20 text-6xl">🏆</div>
 
-                {/* Edit Form */}
-                {isEditing && (
-                    <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
-                        <div className="edit-form-grid">
-                            <Input
-                                label="Nome Completo"
-                                value={editData.nome}
-                                onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
-                                icon="👤"
-                            />
-                            <Input
-                                label="Telefone"
-                                value={editData.telefone}
-                                onChange={handlePhoneChange}
-                                icon="📱"
-                                placeholder="(11) 99999-9999"
-                                maxLength={15}
-                            />
-                            <Input
-                                label="Data de Nascimento"
-                                type="date"
-                                value={editData.data_nascimento}
-                                onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
-                                icon="📅"
-                            />
-                            <Input
-                                label="Tipo Sanguíneo"
-                                value={editData.tipo_sanguineo}
-                                onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
-                                icon="🩸"
-                                placeholder="Ex: O+"
-                                maxLength={3}
-                            />
-                            <Input
-                                label="Moto Atual"
-                                value={editData.moto_atual}
-                                onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
-                                icon="🏍️"
-                                placeholder="Ex: Honda CB 500X"
-                            />
-                        </div>
-                    </FormCard>
-                )}
-
-                {/* Stats Grid */}
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-icon">🏁</div>
-                        <div className="stat-label">Rolês</div>
-                        <div className="stat-value">{profileData.participacoes_totais}</div>
-                    </div>
-
-                    <div className="stat-card highlight">
-                        <div className="stat-icon">⭐</div>
-                        <div className="stat-label">Estrelinhas</div>
-                        <div className="stat-value">{profileData.estrelinhas}</div>
-                        <div className="stat-subtext">
-                            Próxima em {4 - (profileData.participacoes_totais % 4)} rolês
+                <div className="flex justify-between items-end mb-2 relative z-10">
+                    <div>
+                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Nível Atual</span>
+                        <div className="text-3xl font-oxanium font-bold text-white leading-none mt-1">
+                            Level {profileData.level || 1}
                         </div>
                     </div>
-
-                    <div className="stat-card">
-                        <div className="stat-icon">🏍️</div>
-                        <div className="stat-label">Máquina</div>
-                        <div className="stat-value text-lg truncate">
-                            {profileData.moto_atual || '---'}
-                        </div>
+                    <div className="text-right">
+                        <div className="text-gold font-bold text-xl">{profileData.xp || 0} XP</div>
+                        <div className="text-xs text-gray-500">Próximo nível: {(profileData.level || 1) * 1000} XP</div>
                     </div>
                 </div>
 
-                {/* History Section */}
-                <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
-                    {history.length === 0 ? (
-                        <div className="text-center py-8">
-                            <div className="text-4xl mb-4 opacity-50">🏁</div>
-                            <p className="text-muted">Você ainda não participou de nenhum evento.</p>
-                            <Link to="/" className="text-gold hover:underline mt-2 inline-block">
-                                Ver próximo rolê →
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="history-list">
-                            {history.map((item) => (
-                                <div key={item.id} className="history-item">
-                                    <div className="history-icon">🏁</div>
-                                    <div className="history-info">
-                                        <h4 className="history-title">{item.evento_nome}</h4>
-                                        <div className="history-meta">
-                                            <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
-                                            <span>📍 {item.evento_destino}</span>
-                                        </div>
-                                        <div className="history-moto">
-                                            🏍️ {item.moto_dia}
-                                        </div>
+                {/* XP Bar */}
+                <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden relative z-10">
+                    <div
+                        className="h-full bg-gradient-to-r from-gold to-yellow-500 transition-all duration-1000 ease-out"
+                        style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
+                    ></div>
+                </div>
+
+                {/* Medals Grid */}
+                {userMedals.length > 0 && (
+                    <div className="mt-6 border-t border-gray-800 pt-4">
+                        <h4 className="text-xs text-gray-400 font-bold uppercase mb-3">Medalhas Conquistadas</h4>
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            {userMedals.map(medal => (
+                                <div key={medal.id} className="flex-shrink-0 w-16 text-center group relative cursor-help">
+                                    <div className="text-3xl filter drop-shadow-lg mb-1 transform group-hover:scale-110 transition-transform">
+                                        {medal.icon_url}
                                     </div>
-                                    <Badge variant="success" dot>Confirmado</Badge>
+                                    <div className="text-[10px] text-gray-400 truncate w-full">{medal.name}</div>
+
+                                    {/* Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 bg-black/90 border border-gray-700 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                                        <div className="font-bold text-gold">{medal.name}</div>
+                                        <div>{medal.description}</div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    )}
-                </FormCard>
+                    </div>
+                )}
+
+                <Link to="/ranking" className="block mt-4 text-center text-sm text-gold hover:underline">
+                    Ver Ranking Global →
+                </Link>
             </div>
+            {/* END GAMIFICATION STATS */}
+
+            {/* Member Card */}
+            <div className="mb-6">
+                <MemberCard user={user} profileData={profileData} />
+                <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
+            </div>
+
+            {/* Edit Form */}
+            {isEditing && (
+                <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
+                    <div className="edit-form-grid">
+                        <Input
+                            label="Nome Completo"
+                            value={editData.nome}
+                            onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
+                            icon="👤"
+                        />
+                        <Input
+                            label="Telefone"
+                            value={editData.telefone}
+                            onChange={handlePhoneChange}
+                            icon="📱"
+                            placeholder="(11) 99999-9999"
+                            maxLength={15}
+                        />
+                        <Input
+                            label="Data de Nascimento"
+                            type="date"
+                            value={editData.data_nascimento}
+                            onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
+                            icon="📅"
+                        />
+                        <Input
+                            label="Tipo Sanguíneo"
+                            value={editData.tipo_sanguineo}
+                            onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
+                            icon="🩸"
+                            placeholder="Ex: O+"
+                            maxLength={3}
+                        />
+                        <Input
+                            label="Moto Atual"
+                            value={editData.moto_atual}
+                            onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
+                            icon="🏍️"
+                            placeholder="Ex: Honda CB 500X"
+                        />
+                    </div>
+                </FormCard>
+            )}
+
+            {/* Stats Grid */}
+            <div className="stats-grid">
+                <div className="stat-card">
+                    <div className="stat-icon">🏁</div>
+                    <div className="stat-label">Rolês</div>
+                    <div className="stat-value">{profileData.participacoes_totais}</div>
+                </div>
+
+                <div className="stat-card highlight">
+                    <div className="stat-icon">⭐</div>
+                    <div className="stat-label">Estrelinhas</div>
+                    <div className="stat-value">{profileData.estrelinhas}</div>
+                    <div className="stat-subtext">
+                        Próxima em {4 - (profileData.participacoes_totais % 4)} rolês
+                    </div>
+                </div>
+
+                <div className="stat-card">
+                    <div className="stat-icon">🏍️</div>
+                    <div className="stat-label">Máquina</div>
+                    <div className="stat-value text-lg truncate">
+                        {profileData.moto_atual || '---'}
+                    </div>
+                </div>
+            </div>
+
+            {/* History Section */}
+            <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
+                {history.length === 0 ? (
+                    <div className="text-center py-8">
+                        <div className="text-4xl mb-4 opacity-50">🏁</div>
+                        <p className="text-muted">Você ainda não participou de nenhum evento.</p>
+                        <Link to="/" className="text-gold hover:underline mt-2 inline-block">
+                            Ver próximo rolê →
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="history-list">
+                        {history.map((item) => (
+                            <div key={item.id} className="history-item">
+                                <div className="history-icon">🏁</div>
+                                <div className="history-info">
+                                    <h4 className="history-title">{item.evento_nome}</h4>
+                                    <div className="history-meta">
+                                        <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
+                                        <span>📍 {item.evento_destino}</span>
+                                    </div>
+                                    <div className="history-moto">
+                                        🏍️ {item.moto_dia}
+                                    </div>
+                                </div>
+                                <Badge variant="success" dot>Confirmado</Badge>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </FormCard>
         </div>
     );
 };

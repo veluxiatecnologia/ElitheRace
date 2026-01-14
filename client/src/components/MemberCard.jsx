@@ -78,9 +78,8 @@ const MemberCard = ({ user, profileData }) => {
                         <div className="card-chip"></div>
 
                         <div className="card-detail" style={{ textAlign: 'right' }}>
-                            <div className="card-label">Membro Desde</div>
-                            <div className="card-value">2024</div>
-                            {/* In future, use created_at date */}
+                            <div className="card-label">Nível</div>
+                            <div className="card-value text-gold">LVL {profileData?.level || 1}</div>
                         </div>
                     </div>
                 </div>

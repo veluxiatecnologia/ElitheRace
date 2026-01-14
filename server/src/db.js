@@ -350,6 +350,88 @@ const db = {
       const { error } = await supabase.from('comments').delete().eq('id', id);
       if (error) throw error;
     }
+  },
+
+  gamification: {
+    getRanking: async () => {
+      // Use Admin to avoid any RLS issues with partial profiles
+      const { data, error } = await (supabaseAdmin || supabase)
+        .from('profiles')
+        .select('id, nome, avatar_url, xp, level, checkins_count')
+        .order('xp', { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+    getAllMedals: async () => {
+      const { data, error } = await supabase.from('medals').select('*').order('xp_reward');
+      if (error) throw error;
+      return data;
+    },
+    getUserMedals: async (userId) => {
+      const { data, error } = await supabase
+        .from('user_medals')
+        .select('*, medals(*)')
+        .eq('user_id', userId)
+        .order('awarded_at', { ascending: false });
+      if (error) throw error;
+      // Flatten structure
+      return data.map(um => ({
+        ...um.medals,
+        awarded_at: um.awarded_at
+      }));
+    },
+    awardMedal: async (userId, medalSlug) => {
+      const client = supabaseAdmin || supabase;
+
+      // 1. Get Medal ID
+      const { data: medal, error: mError } = await client
+        .from('medals')
+        .select('*')
+        .eq('slug', medalSlug)
+        .single();
+
+      if (mError || !medal) return null; // Medal doesn't exist
+
+      // 2. Check if already has
+      const { data: existing } = await client
+        .from('user_medals')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('medal_id', medal.id)
+        .single();
+
+      if (existing) return null; // Already awarded
+
+      // 3. Award
+      const { error: insertError } = await client
+        .from('user_medals')
+        .insert({ user_id: userId, medal_id: medal.id });
+
+      if (insertError) {
+        console.error('Error awarding medal:', insertError);
+        return null;
+      }
+
+      // 4. Give XP Bonus for Medal (optional, separate from Checkin XP)
+      // For now, we assume Checkin logic handles main XP, this is just extra.
+      if (medal.xp_reward > 0) {
+        try {
+          const { data: user } = await client.from('profiles').select('xp').eq('id', userId).single();
+          if (user) {
+            const newXp = (user.xp || 0) + medal.xp_reward;
+            // Calculate Level (Simple logic: Level = 1 + XP / 1000)
+            const newLevel = Math.floor(1 + newXp / 1000);
+
+            await client.from('profiles').update({ xp: newXp, level: newLevel }).eq('id', userId);
+          }
+        } catch (xpError) {
+          console.error('Error updating XP for medal:', xpError);
+        }
+      }
+
+      return medal;
+    }
   }
 };
 

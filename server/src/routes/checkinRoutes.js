@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../db');
+const { supabase, supabaseAdmin, db } = require('../db');
 const { validateQRCodeData } = require('../services/qrCodeService');
 
 /**
@@ -181,6 +181,49 @@ router.post('/register', async (req, res) => {
             });
         }
 
+        // --- GAMIFICATION START ---
+        try {
+            const userId = data.profiles?.id; // Assuming we can get ID from relation or need to query
+            // Wait, data.profiles is joined, but we need the User ID. 
+            // The 'confirmations' table has 'usuario_id'.
+            const targetUserId = data.usuario_id;
+
+            if (targetUserId) {
+                // 1. Award Check-in XP (+100)
+                const { data: userProfile } = await supabaseAdmin
+                    .from('profiles')
+                    .select('xp, checkins_count')
+                    .eq('id', targetUserId)
+                    .single();
+
+                if (userProfile) {
+                    const newCount = (userProfile.checkins_count || 0) + 1;
+                    const newXp = (userProfile.xp || 0) + 100; // +100 XP per check-in
+                    const newLevel = Math.floor(1 + newXp / 1000);
+
+                    // Update Profile Stats
+                    await supabaseAdmin
+                        .from('profiles')
+                        .update({
+                            checkins_count: newCount,
+                            xp: newXp,
+                            level: newLevel
+                        })
+                        .eq('id', targetUserId);
+
+                    // 2. Check Milestones & Award Medals
+                    if (newCount === 1) await db.gamification.awardMedal(targetUserId, 'start-engine');
+                    if (newCount === 3) await db.gamification.awardMedal(targetUserId, 'combo-3');
+                    if (newCount === 5) await db.gamification.awardMedal(targetUserId, 'veteran-5');
+                    if (newCount === 10) await db.gamification.awardMedal(targetUserId, 'legend-10');
+                }
+            }
+        } catch (gameError) {
+            console.error('Error in gamification logic:', gameError);
+            // Don't fail the check-in if gamification fails
+        }
+        // --- GAMIFICATION END ---
+
         res.json({
             success: true,
             checkedIn: {
@@ -194,7 +237,6 @@ router.post('/register', async (req, res) => {
                 checkedInAt: data.checked_in_at
             }
         });
-
     } catch (error) {
         console.error('Error registering check-in:', error);
         res.status(500).json({ error: 'Erro ao registrar check-in' });
