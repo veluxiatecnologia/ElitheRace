@@ -74,6 +74,8 @@
     align-items: center;
     gap: 15px;
     margin-top: 10px;
+    min-width: 0;
+    /* Important for text truncation in flex children */
 }
 
 .card-avatar {
@@ -87,6 +89,9 @@
 
 .card-info {
     text-align: left;
+    min-width: 0;
+    /* Important for text truncation */
+    overflow: hidden;
 }
 
 .card-name {
@@ -94,6 +99,9 @@
     font-weight: 700;
     color: white;
     margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .card-level {

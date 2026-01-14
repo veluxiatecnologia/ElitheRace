@@ -64,7 +64,7 @@ const MemberCard = ({ user, profileData }) => {
                             className="card-avatar"
                         />
                         <div className="card-info">
-                            <div className="card-name">{profileData?.nome?.split(' ').slice(0, 2).join(' ') || 'Membro Elithe'}</div>
+                            <div className="card-name">{profileData?.nome || 'Membro Elithe'}</div>
                             <div className="card-level">{renderStars()}</div>
                         </div>
                     </div>
