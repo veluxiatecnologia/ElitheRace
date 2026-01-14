@@ -335,7 +335,8 @@ const db = {
       return data;
     },
     getCommentsByPhoto: async (photoId) => {
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('comments')
         .select('*, profiles(nome, avatar_url)')
         .eq('photo_id', photoId)
