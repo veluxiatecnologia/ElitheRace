@@ -244,7 +244,9 @@ const db = {
       return data;
     },
     getPhotosByEvent: async (eventId) => {
-      const { data, error } = await supabase
+      // Use Admin client to fetch photos WITH embedded likes/comments (otherwise RLS might hide them)
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('event_photos')
         .select(`
           *,
