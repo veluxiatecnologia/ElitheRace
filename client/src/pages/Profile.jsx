@@ -10,7 +10,7 @@ import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import toast from 'react-hot-toast';
-import Wrapper from '../components/Wrapper'; // Assuming Wrapper exists or just placement
+
 import MemberCard from '../components/MemberCard';
 import './Profile.css';
 
