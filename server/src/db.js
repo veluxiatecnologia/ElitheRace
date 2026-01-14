@@ -234,7 +234,7 @@ const db = {
     // Photos
     createPhoto: async (photo) => {
       const { data, error } = await supabase
-        .from('photos')
+        .from('event_photos')
         .insert(photo)
         .select('*, profiles(nome, avatar_url)')
         .single();
@@ -243,7 +243,7 @@ const db = {
     },
     getPhotosByEvent: async (eventId) => {
       const { data, error } = await supabase
-        .from('photos')
+        .from('event_photos')
         .select(`
           *,
           profiles (nome, avatar_url),
@@ -251,6 +251,7 @@ const db = {
           comments (id)
         `)
         .eq('evento_id', eventId)
+        .eq('status', 'approved') // Only fetch approved photos by default
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -263,10 +264,35 @@ const db = {
         likes: photo.likes // Keep likes to check if user liked
       }));
     },
+    // Admin: Get pending photos
+    getPendingPhotos: async () => {
+      const { data, error } = await supabase
+        .from('event_photos')
+        .select(`
+          *,
+          profiles (nome, avatar_url),
+          events (nome)
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    // Admin: Moderate photo
+    moderatePhoto: async (photoId, status) => {
+      const { data, error } = await supabase
+        .from('event_photos')
+        .update({ status })
+        .eq('id', photoId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
     deletePhoto: async (id) => {
       // Also delete from storage (will be handled in controller)
       const { error } = await supabase
-        .from('photos')
+        .from('event_photos')
         .delete()
         .eq('id', id);
       if (error) throw error;

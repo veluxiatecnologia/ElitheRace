@@ -1,0 +1,182 @@
+.member-card-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 400px;
+    height: 250px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.member-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.member-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.member-card-front,
+.member-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    border: 1px solid var(--color-gold-dim);
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- FRONT DESIGN --- */
+.member-card-front {
+    padding: 20px;
+    justify-content: space-between;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-logo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--color-gold);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.card-role-badge {
+    background: rgba(255, 215, 0, 0.15);
+    color: var(--color-gold);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.card-body {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.card-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--color-gold);
+    object-fit: cover;
+    background: #333;
+}
+
+.card-info {
+    text-align: left;
+}
+
+.card-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.card-level {
+    color: var(--color-gold);
+    font-size: 0.9rem;
+    display: flex;
+    gap: 4px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.card-detail {
+    text-align: left;
+}
+
+.card-label {
+    font-size: 0.65rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.card-value {
+    font-size: 0.9rem;
+    color: #ddd;
+    font-weight: 600;
+}
+
+.card-chip {
+    width: 35px;
+    height: 25px;
+    background: linear-gradient(135deg, #d4af37 0%, #f9e29c 50%, #d4af37 100%);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+/* --- BACK DESIGN (QR) --- */
+.member-card-back {
+    background: white;
+    color: black;
+    transform: rotateY(180deg);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.qr-code-wrapper {
+    width: 160px;
+    height: 160px;
+}
+
+.qr-code-wrapper img {
+    width: 100%;
+    height: 100%;
+}
+
+.qr-label {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.qr-sub {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Holographic effect overlay */
+.holographic-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 60%);
+    pointer-events: none;
+    z-index: 10;
+}

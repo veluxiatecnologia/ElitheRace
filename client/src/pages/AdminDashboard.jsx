@@ -54,6 +54,11 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(false);
 
+    // Photo Moderation States
+    const [pendingPhotos, setPendingPhotos] = useState([]);
+    const [isModerationModalOpen, setIsModerationModalOpen] = useState(false);
+    const [loadingPending, setLoadingPending] = useState(false);
+
     useEffect(() => {
         const role = user?.user_metadata?.role || user?.role;
         if (user && role !== 'admin') {
@@ -527,6 +532,52 @@ const AdminDashboard = () => {
         }
     };
 
+
+    // --- Photo Moderation ---
+    const fetchPendingPhotos = async () => {
+        setLoadingPending(true);
+        try {
+            const headers = await getAuthHeader();
+            const res = await fetch(API_URL + '/api/gallery/pending', { headers });
+            if (!res.ok) throw new Error('Erro ao buscar fotos pendentes');
+            const data = await res.json();
+            setPendingPhotos(data);
+            setIsModerationModalOpen(true);
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao carregar fotos pendentes');
+        } finally {
+            setLoadingPending(false);
+        }
+    };
+
+    const handleModeratePhoto = async (photoId, status) => {
+        const toastId = toast.loading(status === 'approved' ? 'Aprovando...' : 'Rejeitando...');
+        try {
+            const headers = await getAuthHeader();
+            const res = await fetch(`${API_URL}/api/gallery/photos/${photoId}/moderate`, {
+                method: 'PUT',
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+
+            if (!res.ok) throw new Error('Erro ao moderar foto');
+
+            toast.success(status === 'approved' ? 'Foto aprovada! ✅' : 'Foto rejeitada ❌', { id: toastId });
+
+            // Remove from list locally
+            setPendingPhotos(prev => prev.filter(p => p.id !== photoId));
+
+            // If empty, close modal
+            if (pendingPhotos.length <= 1) {
+                setIsModerationModalOpen(false);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message, { id: toastId });
+        }
+    };
+
     if (loading) return <div className="p-8"><LoadingSkeleton count={5} height={40} /></div>;
     if (showPermission) return <PermissionWarning />;
 
@@ -549,6 +600,9 @@ const AdminDashboard = () => {
                     </Button>
                     <Button variant="secondary" onClick={fetchUsers} icon="👥">
                         Gerenciar Usuários
+                    </Button>
+                    <Button variant="secondary" onClick={fetchPendingPhotos} icon="🖼️">
+                        Moderar Fotos
                     </Button>
                     <Button variant="primary" onClick={() => openEventModal()} icon="➕">
                         Novo Evento
@@ -855,6 +909,62 @@ const AdminDashboard = () => {
                             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: '#888' }}>
                                 Nenhum usuário encontrado.
                             </div>
+                        )}
+                    </div>
+                )}
+
+            </Modal>
+
+            {/* Photo Moderation Modal */}
+            <Modal
+                isOpen={isModerationModalOpen}
+                onClose={() => setIsModerationModalOpen(false)}
+                title="Moderação de Fotos"
+                size="lg"
+                footer={<Button variant="ghost" onClick={() => setIsModerationModalOpen(false)}>Fechar</Button>}
+            >
+                {loadingPending ? (
+                    <div className="p-8"><LoadingSpinner /></div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {pendingPhotos.length === 0 ? (
+                            <div className="col-span-full text-center py-8 text-gray-500">
+                                Nenhuma foto pendente.
+                            </div>
+                        ) : (
+                            pendingPhotos.map(photo => (
+                                <div key={photo.id} className="relative group bg-carbon-lighter border border-glass-border rounded-lg overflow-hidden">
+                                    <div className="aspect-square relative">
+                                        <img src={photo.url} alt="Pendente" className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                {photo.profiles?.avatar_url ? (
+                                                    <img src={photo.profiles.avatar_url} className="w-6 h-6 rounded-full border border-gold" />
+                                                ) : (
+                                                    <div className="w-6 h-6 rounded-full bg-gold/20 border border-gold/50 flex items-center justify-center text-[10px] text-gold">
+                                                        {photo.profiles?.nome?.charAt(0)}
+                                                    </div>
+                                                )}
+                                                <span className="text-sm text-white truncate">{photo.profiles?.nome}</span>
+                                            </div>
+                                            {photo.events?.nome && (
+                                                <span className="text-xs text-gray-400 truncate mb-1">📅 {photo.events.nome}</span>
+                                            )}
+                                            {photo.caption && (
+                                                <p className="text-xs text-gray-300 italic truncate">"{photo.caption}"</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="p-2 grid grid-cols-2 gap-2">
+                                        <Button size="small" variant="success" onClick={() => handleModeratePhoto(photo.id, 'approved')} icon="✓">
+                                            Aprovar
+                                        </Button>
+                                        <Button size="small" variant="danger" onClick={() => handleModeratePhoto(photo.id, 'rejected')} icon="✕">
+                                            Rejeitar
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))
                         )}
                     </div>
                 )}

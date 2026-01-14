@@ -10,6 +10,8 @@ import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import toast from 'react-hot-toast';
+import Wrapper from '../components/Wrapper'; // Assuming Wrapper exists or just placement
+import MemberCard from '../components/MemberCard';
 import './Profile.css';
 
 const Profile = () => {
@@ -27,6 +29,7 @@ const Profile = () => {
         email: '',
         telefone: '',
         data_nascimento: '',
+        tipo_sanguineo: '',
         moto_atual: '',
         avatar_url: '',
         participacoes_totais: 0,
@@ -64,6 +67,7 @@ const Profile = () => {
                 telefone: profile.telefone || '',
                 data_nascimento: profile.data_nascimento || '',
                 moto_atual: profile.moto_atual || '',
+                tipo_sanguineo: profile.tipo_sanguineo || '',
                 avatar_url: profile.avatar_url || '',
                 participacoes_totais: profile.participacoes_totais || 0,
                 estrelinhas: profile.estrelinhas || 0
@@ -186,6 +190,7 @@ const Profile = () => {
                     nome: editData.nome,
                     telefone: editData.telefone,
                     data_nascimento: editData.data_nascimento || null,
+                    tipo_sanguineo: editData.tipo_sanguineo,
                     moto_atual: editData.moto_atual
                 })
                 .eq('id', user.id);
@@ -280,6 +285,12 @@ const Profile = () => {
                     </div>
                 </div>
 
+                {/* Member Card */}
+                <div className="mb-6">
+                    <MemberCard user={user} profileData={profileData} />
+                    <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
+                </div>
+
                 {/* Edit Form */}
                 {isEditing && (
                     <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
@@ -304,6 +315,14 @@ const Profile = () => {
                                 value={editData.data_nascimento}
                                 onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
                                 icon="📅"
+                            />
+                            <Input
+                                label="Tipo Sanguíneo"
+                                value={editData.tipo_sanguineo}
+                                onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
+                                icon="🩸"
+                                placeholder="Ex: O+"
+                                maxLength={3}
                             />
                             <Input
                                 label="Moto Atual"

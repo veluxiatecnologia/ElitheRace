@@ -26,6 +26,47 @@ router.get('/timeline', async (req, res) => {
 });
 
 /**
+ * GET /api/gallery/pending
+ * Admin: List pending photos
+ */
+router.get('/pending', authenticateToken, async (req, res) => {
+    try {
+        if (req.user.user_metadata?.role !== 'admin') {
+            return res.status(403).json({ error: 'Acesso negado' });
+        }
+        const photos = await db.gallery.getPendingPhotos();
+        res.json(photos);
+    } catch (error) {
+        console.error('Error fetching pending photos:', error);
+        res.status(500).json({ error: 'Erro ao carregar fotos pendentes' });
+    }
+});
+
+/**
+ * PUT /api/gallery/photos/:photoId/moderate
+ * Admin: Approve or Reject photo
+ */
+router.put('/photos/:photoId/moderate', authenticateToken, async (req, res) => {
+    try {
+        if (req.user.user_metadata?.role !== 'admin') {
+            return res.status(403).json({ error: 'Acesso negado' });
+        }
+        const { photoId } = req.params;
+        const { status } = req.body; // 'approved' or 'rejected'
+
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ error: 'Status inválido' });
+        }
+
+        const photo = await db.gallery.moderatePhoto(photoId, status);
+        res.json(photo);
+    } catch (error) {
+        console.error('Error moderating photo:', error);
+        res.status(500).json({ error: 'Erro ao moderar foto' });
+    }
+});
+
+/**
  * GET /api/gallery/events/:eventId/photos
  * List photos for an event
  */

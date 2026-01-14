@@ -9,19 +9,41 @@ const { validateQRCodeData } = require('../services/qrCodeService');
  */
 router.post('/validate', async (req, res) => {
     try {
-        const { token, qrData } = req.body;
+        const { token, qrData, eventId } = req.body;
 
         let searchToken = token;
+        let isMemberQr = false;
 
         // If QR data is provided, validate and extract token
         if (qrData) {
-            const parsed = validateQRCodeData(qrData);
-            if (!parsed) {
-                return res.status(400).json({
-                    error: 'Formato de QR Code inválido'
-                });
+            // Try parsing as JSON (Event Token or Member Token)
+            try {
+                const parsed = JSON.parse(qrData);
+                if (parsed.type === 'elithe_checkin') {
+                    // Standard Event QR
+                    if (validateQRCodeData(qrData)) {
+                        searchToken = parsed.token;
+                    } else {
+                        return res.status(400).json({ error: 'QR Code de evento inválido' });
+                    }
+                } else if (parsed.type === 'elithe_member') {
+                    // New Member QR
+                    searchToken = parsed.userId;
+                    isMemberQr = true;
+                } else {
+                    // Unknown JSON
+                    return res.status(400).json({ error: 'Tipo de QR Code desconhecido' });
+                }
+            } catch (e) {
+                // Not JSON, assume it might be a raw UUID (Member ID)
+                // or a raw token string
+                searchToken = qrData;
+                // If it looks like a UUID and we have an eventId, treated as Member ID
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (uuidRegex.test(qrData) && eventId) {
+                    isMemberQr = true;
+                }
             }
-            searchToken = parsed.token;
         }
 
         if (!searchToken) {
@@ -30,21 +52,40 @@ router.post('/validate', async (req, res) => {
             });
         }
 
-        // Find confirmation by QR token
-        const { data, error } = await supabase
+        let query = supabase
             .from('confirmations')
             .select(`
                 *,
                 profiles!inner(nome, email),
                 events!inner(id, nome, data, destino)
             `)
-            .eq('qr_token', searchToken)
             .single();
 
+        if (isMemberQr) {
+            // Member QR: Find confirmation by User ID + Event ID
+            if (!eventId) {
+                return res.status(400).json({ error: 'Selecione um evento para validar Carteirinha de Membro' });
+            }
+            query = query
+                .eq('usuario_id', searchToken)
+                .eq('evento_id', eventId);
+        } else {
+            // Event QR: Find confirmation by QR Token (Unique to confirmation)
+            query = query.eq('qr_token', searchToken);
+        }
+
+        const { data, error } = await query;
+
         if (error || !data) {
-            return res.status(404).json({
-                error: 'QR Code inválido ou não encontrado'
-            });
+            if (isMemberQr) {
+                return res.status(404).json({
+                    error: 'Membro não inscrito neste evento'
+                });
+            } else {
+                return res.status(404).json({
+                    error: 'QR Code inválido ou não encontrado'
+                });
+            }
         }
 
         res.json({

@@ -91,7 +91,10 @@ const CheckInScanner = () => {
             const res = await fetch(`${API_URL}/api/checkin/validate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ qrData: decodedText })
+                body: JSON.stringify({
+                    qrData: decodedText,
+                    eventId: selectedEventId // Pass selected event for Member Token validation
+                })
             });
 
             const data = await res.json();
