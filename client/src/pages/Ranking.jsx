@@ -20,8 +20,9 @@ const Ranking = () => {
 
     const fetchData = async () => {
         try {
+            if (!session) return;
             const headers = {
-                'Authorization': `Bearer ${session.access_token}`
+                'Authorization': `Bearer ${session?.access_token}`
             };
 
             const [rankingRes, medalsRes] = await Promise.all([
