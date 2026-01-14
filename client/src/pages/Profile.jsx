@@ -299,32 +299,57 @@ const Profile = () => {
             </div>
 
             {/* GAMIFICATION STATS - NEW PHASE 3 */}
-            <div
-                className="bg-gradient-to-r from-gray-900 to-black rounded-xl mb-6 border border-glass-border shadow-lg relative overflow-hidden"
-                style={{ padding: '35px' }}
-            >
-                <div className="absolute top-0 right-0 p-2 opacity-20 text-6xl">🏆</div>
+            <div className="bg-gradient-to-b from-gray-900 to-black rounded-xl border border-glass-border shadow-2xl p-6 mb-6 relative overflow-hidden">
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 p-4 opacity-10 text-8xl transform translate-x-4 -translate-y-4">🏆</div>
 
-                <div style={{ maxWidth: '85%', margin: '0 auto', position: 'relative', zIndex: 10 }}>
-                    <div className="flex justify-between items-end mb-2">
-                        <div>
-                            <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">NÍVEL ATUAL</span>
-                            <div className="text-3xl font-oxanium font-bold text-white leading-none mt-1">
-                                Level {profileData.level || 1}
+                <div className="relative z-10">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+
+                        {/* Left: Level Ring/Badge */}
+                        <div className="flex-shrink-0 text-center">
+                            <div className="relative inline-flex items-center justify-center">
+                                <div className="w-24 h-24 rounded-full border-4 border-gold/30 flex items-center justify-center bg-black/50 backdrop-blur-sm shadow-[0_0_20px_rgba(255,215,0,0.2)]">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">LEVEL</span>
+                                        <span className="text-4xl font-oxanium font-bold text-gold">{profileData.level || 1}</span>
+                                    </div>
+                                </div>
+                                {/* Progress Circular Indicator (Optional/Simulated) */}
+                                <svg className="absolute top-0 left-0 w-24 h-24 -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="46" fill="none" stroke="gold" strokeWidth="4" strokeDasharray="289" strokeDashoffset={289 - (289 * ((profileData.xp || 0) % 1000) / 1000)} strokeLinecap="round" className="opacity-0 md:opacity-100 transition-all duration-1000" />
+                                </svg>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <div className="text-gold font-bold text-xl">{profileData.xp || 0} XP</div>
-                            <div className="text-xs text-gray-500">Próximo nível: {(profileData.level || 1) * 1000} XP</div>
-                        </div>
-                    </div>
 
-                    {/* XP Bar */}
-                    <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-6">
-                        <div
-                            className="h-full bg-gradient-to-r from-gold to-yellow-500 transition-all duration-1000 ease-out"
-                            style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
-                        ></div>
+                        {/* Right: XP Details */}
+                        <div className="flex-1 w-full text-center md:text-left">
+                            <h3 className="text-xl font-bold text-white mb-2">Progresso da Temporada</h3>
+
+                            <div className="flex justify-between text-sm mb-1 text-gray-400">
+                                <span>XP Atual</span>
+                                <span>Próximo Nível</span>
+                            </div>
+
+                            <div className="flex justify-between items-end mb-2">
+                                <span className="text-2xl font-bold text-gold">{profileData.xp || 0} XP</span>
+                                <span className="text-sm font-mono text-gray-500">/ {(profileData.level * 1000) || 1000}</span>
+                            </div>
+
+                            {/* Bar */}
+                            <div className="h-4 w-full bg-gray-800 rounded-full overflow-hidden shadow-inner border border-gray-700">
+                                <div
+                                    className="h-full bg-gradient-to-r from-gold to-yellow-600 relative overflow-hidden"
+                                    style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
+                                >
+                                    <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-2 text-xs text-gray-500 text-right">
+                                Faltam {(1000 - ((profileData.xp || 0) % 1000))} XP para subir de nível
+                            </div>
+                        </div>
                     </div>
                 </div>
 
