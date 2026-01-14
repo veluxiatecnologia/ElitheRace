@@ -14,6 +14,60 @@ import toast from 'react-hot-toast';
 import MemberCard from '../components/MemberCard';
 import './Profile.css';
 
+// Responsive styles for mobile
+const responsiveStyles = `
+    @media (max-width: 640px) {
+        .profile-container {
+            padding: 0.75rem !important;
+        }
+        .profile-header h2 {
+            font-size: 1.25rem !important;
+        }
+        .profile-header .avatar-container {
+            width: 100px !important;
+            height: 100px !important;
+        }
+        .progress-card .level-badge {
+            width: 64px !important;
+            height: 64px !important;
+        }
+        .progress-card .level-badge div:last-child {
+            font-size: 28px !important;
+        }
+        .progress-card h3 {
+            font-size: 14px !important;
+        }
+        .progress-card .xp-text {
+            font-size: 12px !important;
+        }
+        .stats-grid {
+            gap: 0.5rem !important;
+        }
+        .stat-card {
+            padding: 0.75rem !important;
+        }
+        .stat-card .stat-icon {
+            font-size: 1.75rem !important;
+        }
+        .stat-card .stat-value {
+            font-size: 1.5rem !important;
+        }
+        .stat-card .stat-label {
+            font-size: 0.75rem !important;
+        }
+        .history-item {
+            padding: 0.75rem !important;
+        }
+        .history-item h4 {
+            font-size: 0.875rem !important;
+        }
+        .history-meta {
+            font-size: 0.75rem !important;
+        }
+    }
+`;
+
+
 const Profile = () => {
     const { user } = useAuth();
     const { refreshProfile } = useProfile();
@@ -254,289 +308,291 @@ const Profile = () => {
     if (loading) return <LoadingSpinner fullPage text="Carregando perfil..." />;
 
     return (
-        <div className="profile-page">
-            <div className="profile-container">
+        <>
+            <style>{responsiveStyles}</style>
+            <div className="profile-page">
+                <div className="profile-container">
 
-                {/* Profile Header */}
-                <div className="profile-header">
-                    <div className="profile-content">
-                        {/* Avatar */}
-                        <div className="profile-avatar-wrapper">
-                            <div className="profile-avatar">
-                                {profileData.avatar_url ? (
-                                    <img src={profileData.avatar_url} alt="Avatar" />
-                                ) : (
-                                    <span>{profileData.nome.charAt(0).toUpperCase()}</span>
-                                )}
-                                <div
-                                    className={`profile-avatar-overlay ${uploadingAvatar ? 'profile-avatar-uploading' : ''}`}
-                                    onClick={handleAvatarClick}
-                                >
-                                    {uploadingAvatar ? (
-                                        <>
-                                            <div className="text-2xl mb-1">⏳</div>
-                                            <span>Enviando...</span>
-                                        </>
+                    {/* Profile Header */}
+                    <div className="profile-header">
+                        <div className="profile-content">
+                            {/* Avatar */}
+                            <div className="profile-avatar-wrapper">
+                                <div className="profile-avatar">
+                                    {profileData.avatar_url ? (
+                                        <img src={profileData.avatar_url} alt="Avatar" />
                                     ) : (
-                                        <>
-                                            <div className="text-2xl mb-1">📷</div>
-                                            <span>Alterar Foto</span>
-                                        </>
+                                        <span>{profileData.nome.charAt(0).toUpperCase()}</span>
                                     )}
+                                    <div
+                                        className={`profile-avatar-overlay ${uploadingAvatar ? 'profile-avatar-uploading' : ''}`}
+                                        onClick={handleAvatarClick}
+                                    >
+                                        {uploadingAvatar ? (
+                                            <>
+                                                <div className="text-2xl mb-1">⏳</div>
+                                                <span>Enviando...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="text-2xl mb-1">📷</div>
+                                                <span>Alterar Foto</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarUpload}
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
+
+                            {/* Info */}
+                            <div>
+                                <h1 className="profile-name">{profileData.nome}</h1>
+                                <div className="profile-role">
+                                    👑 PILOTO
+                                </div>
+                                <p className="profile-email">{profileData.email}</p>
+                            </div>
+
+                            {/* Edit Button */}
+                            <div style={{ marginTop: 'var(--spacing-md)' }}>
+                                {!isEditing ? (
+                                    <Button
+                                        variant="secondary"
+                                        onClick={handleEdit}
+                                        icon="✏️"
+                                    >
+                                        Editar Perfil
+                                    </Button>
+                                ) : (
+                                    <>
+                                        <Button
+                                            variant="danger"
+                                            onClick={handleCancel}
+                                            style={{ marginRight: 'var(--spacing-sm)' }}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                        <Button
+                                            variant="primary"
+                                            onClick={handleSave}
+                                            loading={saving}
+                                        >
+                                            Salvar Alterações
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Member Card */}
+                    <div className="mb-6">
+                        <MemberCard user={user} profileData={profileData} />
+                        <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
+                    </div>
+
+                    {/* Gamification Card */}
+                    <FormCard title="Seu Progresso" maxWidth={900} centered={false} className="mb-6 progress-card">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
+                            {/* Level Badge */}
+                            <div className="level-badge" style={{
+                                width: '80px',
+                                height: '80px',
+                                borderRadius: '50%',
+                                border: '3px solid var(--gold)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'linear-gradient(135deg, rgba(0,0,0,0.5), rgba(212,175,55,0.1))',
+                                boxShadow: '0 0 20px rgba(212,175,55,0.3)',
+                                flexShrink: 0
+                            }}>
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Nível</div>
+                                    <div style={{ fontSize: '36px', color: 'var(--gold)', fontWeight: 'bold', lineHeight: 1 }}>{profileData.level || 1}</div>
                                 </div>
                             </div>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleAvatarUpload}
-                                style={{ display: 'none' }}
-                            />
-                        </div>
 
-                        {/* Info */}
-                        <div>
-                            <h1 className="profile-name">{profileData.nome}</h1>
-                            <div className="profile-role">
-                                👑 PILOTO
-                            </div>
-                            <p className="profile-email">{profileData.email}</p>
-                        </div>
+                            {/* XP Progress */}
+                            <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+                                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'white' }}>Progressão</h3>
+                                    <span className="xp-text" style={{ fontSize: '14px', color: 'var(--gold)', fontWeight: 'bold' }}>
+                                        {profileData.xp || 0} / {(profileData.level || 1) * 1000} XP
+                                    </span>
+                                </div>
 
-                        {/* Edit Button */}
-                        <div style={{ marginTop: 'var(--spacing-md)' }}>
-                            {!isEditing ? (
-                                <Button
-                                    variant="secondary"
-                                    onClick={handleEdit}
-                                    icon="✏️"
-                                >
-                                    Editar Perfil
-                                </Button>
-                            ) : (
-                                <>
-                                    <Button
-                                        variant="danger"
-                                        onClick={handleCancel}
-                                        style={{ marginRight: 'var(--spacing-sm)' }}
-                                    >
-                                        Cancelar
-                                    </Button>
-                                    <Button
-                                        variant="primary"
-                                        onClick={handleSave}
-                                        loading={saving}
-                                    >
-                                        Salvar Alterações
-                                    </Button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Member Card */}
-                <div className="mb-6">
-                    <MemberCard user={user} profileData={profileData} />
-                    <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
-                </div>
-
-                {/* Gamification Card */}
-                <FormCard title="Seu Progresso" maxWidth={900} centered={false} className="mb-6">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
-                        {/* Level Badge */}
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            borderRadius: '50%',
-                            border: '3px solid var(--gold)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'linear-gradient(135deg, rgba(0,0,0,0.5), rgba(212,175,55,0.1))',
-                            boxShadow: '0 0 20px rgba(212,175,55,0.3)',
-                            flexShrink: 0
-                        }}>
-                            <div style={{ textAlign: 'center' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Nível</div>
-                                <div style={{ fontSize: '36px', color: 'var(--gold)', fontWeight: 'bold', lineHeight: 1 }}>{profileData.level || 1}</div>
-                            </div>
-                        </div>
-
-                        {/* XP Progress */}
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'white' }}>Progressão</h3>
-                                <span style={{ fontSize: '14px', color: 'var(--gold)', fontWeight: 'bold' }}>
-                                    {profileData.xp || 0} / {(profileData.level || 1) * 1000} XP
-                                </span>
-                            </div>
-
-                            {/* Progress Bar */}
-                            <div style={{
-                                height: '12px',
-                                width: '100%',
-                                backgroundColor: 'rgba(255,255,255,0.1)',
-                                borderRadius: '10px',
-                                overflow: 'hidden',
-                                marginBottom: '0.5rem',
-                                border: '1px solid rgba(255,255,255,0.2)'
-                            }}>
+                                {/* Progress Bar */}
                                 <div style={{
-                                    height: '100%',
-                                    background: 'linear-gradient(90deg, var(--gold), #ffd700, var(--gold))',
-                                    width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%`,
-                                    transition: 'width 0.3s ease',
-                                    boxShadow: '0 0 10px rgba(212,175,55,0.5)'
-                                }}></div>
-                            </div>
+                                    height: '12px',
+                                    width: '100%',
+                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '10px',
+                                    overflow: 'hidden',
+                                    marginBottom: '0.5rem',
+                                    border: '1px solid rgba(255,255,255,0.2)'
+                                }}>
+                                    <div style={{
+                                        height: '100%',
+                                        background: 'linear-gradient(90deg, var(--gold), #ffd700, var(--gold))',
+                                        width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%`,
+                                        transition: 'width 0.3s ease',
+                                        boxShadow: '0 0 10px rgba(212,175,55,0.5)'
+                                    }}></div>
+                                </div>
 
-                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'right' }}>
-                                Faltam <span style={{ color: 'white', fontWeight: 'bold' }}>
-                                    {((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP
-                                </span> para o próximo nível
-                            </p>
+                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'right' }}>
+                                    Faltam <span style={{ color: 'white', fontWeight: 'bold' }}>
+                                        {((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP
+                                    </span> para o próximo nível
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Medals */}
+                        {userMedals.length > 0 && (
+                            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
+                                <h4 style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                                    Medalhas Conquistadas
+                                </h4>
+                                <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                                    {userMedals.map(medal => (
+                                        <div key={medal.id} style={{ flexShrink: 0, textAlign: 'center', cursor: 'help' }} title={medal.description}>
+                                            <div style={{ fontSize: '32px', marginBottom: '0.25rem', transition: 'transform 0.2s' }}>
+                                                {medal.icon_url}
+                                            </div>
+                                            <div style={{ fontSize: '10px', color: 'var(--text-muted)', width: '64px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {medal.name}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <Link to="/ranking" style={{
+                            display: 'block',
+                            marginTop: '1rem',
+                            textAlign: 'center',
+                            fontSize: '14px',
+                            color: 'var(--gold)',
+                            textDecoration: 'none'
+                        }}>
+                            Ver Ranking Global →
+                        </Link>
+                    </FormCard>
+
+                    {/* Edit Form */}
+                    {isEditing && (
+                        <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
+                            <div className="edit-form-grid">
+                                <Input
+                                    label="Nome Completo"
+                                    value={editData.nome}
+                                    onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
+                                    icon="👤"
+                                />
+                                <Input
+                                    label="Telefone"
+                                    value={editData.telefone}
+                                    onChange={handlePhoneChange}
+                                    icon="📱"
+                                    placeholder="(11) 99999-9999"
+                                    maxLength={15}
+                                />
+                                <Input
+                                    label="Data de Nascimento"
+                                    type="date"
+                                    value={editData.data_nascimento}
+                                    onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
+                                    icon="📅"
+                                />
+                                <Input
+                                    label="Tipo Sanguíneo"
+                                    value={editData.tipo_sanguineo}
+                                    onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
+                                    icon="🩸"
+                                    placeholder="Ex: O+"
+                                    maxLength={3}
+                                />
+                                <Input
+                                    label="Moto Atual"
+                                    value={editData.moto_atual}
+                                    onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
+                                    icon="🏍️"
+                                    placeholder="Ex: Honda CB 500X"
+                                />
+                            </div>
+                        </FormCard>
+                    )}
+
+                    {/* Stats Grid */}
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-icon">🏁</div>
+                            <div className="stat-label">Rolês</div>
+                            <div className="stat-value">{profileData.participacoes_totais || 0}</div>
+                        </div>
+
+                        <div className="stat-card highlight">
+                            <div className="stat-icon">⭐</div>
+                            <div className="stat-label">Estrelinhas</div>
+                            <div className="stat-value">{profileData.estrelinhas || 0}</div>
+                            <div className="stat-subtext">
+                                Próxima em {4 - ((profileData.participacoes_totais || 0) % 4)} rolês
+                            </div>
+                        </div>
+
+                        <div className="stat-card">
+                            <div className="stat-icon">🏍️</div>
+                            <div className="stat-label">Máquina</div>
+                            <div className="stat-value text-lg truncate">
+                                {profileData.moto_atual || '---'}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Medals */}
-                    {userMedals.length > 0 && (
-                        <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
-                            <h4 style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                                Medalhas Conquistadas
-                            </h4>
-                            <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                                {userMedals.map(medal => (
-                                    <div key={medal.id} style={{ flexShrink: 0, textAlign: 'center', cursor: 'help' }} title={medal.description}>
-                                        <div style={{ fontSize: '32px', marginBottom: '0.25rem', transition: 'transform 0.2s' }}>
-                                            {medal.icon_url}
+                    {/* History Section */}
+                    <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
+                        {history.length === 0 ? (
+                            <div className="text-center py-8">
+                                <div className="text-4xl mb-4 opacity-50">🏁</div>
+                                <p className="text-muted">Você ainda não participou de nenhum evento.</p>
+                                <Link to="/" className="text-gold hover:underline mt-2 inline-block">
+                                    Ver próximo rolê →
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="history-list">
+                                {history.map((item) => (
+                                    <div key={item.id} className="history-item">
+                                        <div className="history-icon">🏁</div>
+                                        <div className="history-info">
+                                            <h4 className="history-title">{item.evento_nome}</h4>
+                                            <div className="history-meta">
+                                                <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
+                                                <span>📍 {item.evento_destino}</span>
+                                            </div>
+                                            <div className="history-moto">
+                                                🏍️ {item.moto_dia}
+                                            </div>
                                         </div>
-                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', width: '64px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                            {medal.name}
-                                        </div>
+                                        <Badge variant="success" dot>Confirmado</Badge>
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    )}
-
-                    <Link to="/ranking" style={{
-                        display: 'block',
-                        marginTop: '1rem',
-                        textAlign: 'center',
-                        fontSize: '14px',
-                        color: 'var(--gold)',
-                        textDecoration: 'none'
-                    }}>
-                        Ver Ranking Global →
-                    </Link>
-                </FormCard>
-
-                {/* Edit Form */}
-                {isEditing && (
-                    <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
-                        <div className="edit-form-grid">
-                            <Input
-                                label="Nome Completo"
-                                value={editData.nome}
-                                onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
-                                icon="👤"
-                            />
-                            <Input
-                                label="Telefone"
-                                value={editData.telefone}
-                                onChange={handlePhoneChange}
-                                icon="📱"
-                                placeholder="(11) 99999-9999"
-                                maxLength={15}
-                            />
-                            <Input
-                                label="Data de Nascimento"
-                                type="date"
-                                value={editData.data_nascimento}
-                                onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
-                                icon="📅"
-                            />
-                            <Input
-                                label="Tipo Sanguíneo"
-                                value={editData.tipo_sanguineo}
-                                onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
-                                icon="🩸"
-                                placeholder="Ex: O+"
-                                maxLength={3}
-                            />
-                            <Input
-                                label="Moto Atual"
-                                value={editData.moto_atual}
-                                onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
-                                icon="🏍️"
-                                placeholder="Ex: Honda CB 500X"
-                            />
-                        </div>
+                        )}
                     </FormCard>
-                )}
-
-                {/* Stats Grid */}
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-icon">🏁</div>
-                        <div className="stat-label">Rolês</div>
-                        <div className="stat-value">{profileData.participacoes_totais || 0}</div>
-                    </div>
-
-                    <div className="stat-card highlight">
-                        <div className="stat-icon">⭐</div>
-                        <div className="stat-label">Estrelinhas</div>
-                        <div className="stat-value">{profileData.estrelinhas || 0}</div>
-                        <div className="stat-subtext">
-                            Próxima em {4 - ((profileData.participacoes_totais || 0) % 4)} rolês
-                        </div>
-                    </div>
-
-                    <div className="stat-card">
-                        <div className="stat-icon">🏍️</div>
-                        <div className="stat-label">Máquina</div>
-                        <div className="stat-value text-lg truncate">
-                            {profileData.moto_atual || '---'}
-                        </div>
-                    </div>
                 </div>
-
-                {/* History Section */}
-                <FormCard title="Histórico de Estrada" subtitle="Seus rolês com a família Elithe" maxWidth={900} centered={false}>
-                    {history.length === 0 ? (
-                        <div className="text-center py-8">
-                            <div className="text-4xl mb-4 opacity-50">🏁</div>
-                            <p className="text-muted">Você ainda não participou de nenhum evento.</p>
-                            <Link to="/" className="text-gold hover:underline mt-2 inline-block">
-                                Ver próximo rolê →
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="history-list">
-                            {history.map((item) => (
-                                <div key={item.id} className="history-item">
-                                    <div className="history-icon">🏁</div>
-                                    <div className="history-info">
-                                        <h4 className="history-title">{item.evento_nome}</h4>
-                                        <div className="history-meta">
-                                            <span>📅 {new Date(item.evento_data).toLocaleDateString('pt-BR')}</span>
-                                            <span>📍 {item.evento_destino}</span>
-                                        </div>
-                                        <div className="history-moto">
-                                            🏍️ {item.moto_dia}
-                                        </div>
-                                    </div>
-                                    <Badge variant="success" dot>Confirmado</Badge>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </FormCard>
             </div>
-        </div>
+        </>
     );
 };
 
 export default Profile;
-
