@@ -98,7 +98,7 @@ const Profile = () => {
                         destino
                     )
                 `)
-                .eq('user_id', user.id)
+                .eq('usuario_id', user.id)
                 .eq('status', 'confirmed')
                 .order('created_at', { ascending: false });
 
@@ -341,61 +341,96 @@ const Profile = () => {
                     <p className="text-center text-muted text-sm mt-2">Toque no cartão para ver seu QR Code</p>
                 </div>
 
-                {/* Gamification Card - Below Member Card */}
-                <div className="bg-gradient-to-r from-carbon-light to-carbon border border-glass-border rounded-xl p-6 mb-6 shadow-lg">
-                    <div className="flex items-center gap-6">
+                {/* Gamification Card */}
+                <FormCard title="Seu Progresso" maxWidth={900} centered={false} className="mb-6">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
                         {/* Level Badge */}
-                        <div className="flex-shrink-0">
-                            <div className="w-20 h-20 rounded-full border-2 border-gold flex items-center justify-center bg-black/40 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                                <div className="text-center">
-                                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">Nível</div>
-                                    <div className="text-3xl font-bold text-gold leading-none mt-1">{profileData.level || 1}</div>
-                                </div>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '50%',
+                            border: '3px solid var(--gold)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'linear-gradient(135deg, rgba(0,0,0,0.5), rgba(212,175,55,0.1))',
+                            boxShadow: '0 0 20px rgba(212,175,55,0.3)',
+                            flexShrink: 0
+                        }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase' }}>Nível</div>
+                                <div style={{ fontSize: '36px', color: 'var(--gold)', fontWeight: 'bold', lineHeight: 1 }}>{profileData.level || 1}</div>
                             </div>
                         </div>
 
                         {/* XP Progress */}
-                        <div className="flex-1">
-                            <div className="flex justify-between items-baseline mb-2">
-                                <h3 className="text-lg font-bold text-white">Progressão</h3>
-                                <span className="text-sm text-gold font-bold">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
+                                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: 'white' }}>Progressão</h3>
+                                <span style={{ fontSize: '14px', color: 'var(--gold)', fontWeight: 'bold' }}>
+                                    {profileData.xp || 0} / {(profileData.level || 1) * 1000} XP
+                                </span>
                             </div>
 
                             {/* Progress Bar */}
-                            <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-2 border border-gray-700">
-                                <div
-                                    className="h-full bg-gradient-to-r from-gold via-yellow-500 to-gold transition-all duration-300"
-                                    style={{ width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%` }}
-                                ></div>
+                            <div style={{
+                                height: '12px',
+                                width: '100%',
+                                backgroundColor: 'rgba(255,255,255,0.1)',
+                                borderRadius: '10px',
+                                overflow: 'hidden',
+                                marginBottom: '0.5rem',
+                                border: '1px solid rgba(255,255,255,0.2)'
+                            }}>
+                                <div style={{
+                                    height: '100%',
+                                    background: 'linear-gradient(90deg, var(--gold), #ffd700, var(--gold))',
+                                    width: `${Math.min(100, ((profileData.xp || 0) / ((profileData.level || 1) * 1000)) * 100)}%`,
+                                    transition: 'width 0.3s ease',
+                                    boxShadow: '0 0 10px rgba(212,175,55,0.5)'
+                                }}></div>
                             </div>
 
-                            <p className="text-xs text-gray-400">
-                                Faltam <span className="text-white font-semibold">{((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP</span> para o próximo nível
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'right' }}>
+                                Faltam <span style={{ color: 'white', fontWeight: 'bold' }}>
+                                    {((profileData.level || 1) * 1000) - (profileData.xp || 0)} XP
+                                </span> para o próximo nível
                             </p>
                         </div>
                     </div>
 
                     {/* Medals */}
                     {userMedals.length > 0 && (
-                        <div className="mt-5 pt-4 border-t border-glass-border">
-                            <h4 className="text-xs text-gray-400 font-bold uppercase mb-3 tracking-wide">Medalhas Conquistadas</h4>
-                            <div className="flex gap-3 overflow-x-auto pb-2">
+                        <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
+                            <h4 style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                                Medalhas Conquistadas
+                            </h4>
+                            <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                                 {userMedals.map(medal => (
-                                    <div key={medal.id} className="flex-shrink-0 text-center group" title={medal.description}>
-                                        <div className="text-3xl mb-1 transform group-hover:scale-125 transition-transform cursor-help">
+                                    <div key={medal.id} style={{ flexShrink: 0, textAlign: 'center', cursor: 'help' }} title={medal.description}>
+                                        <div style={{ fontSize: '32px', marginBottom: '0.25rem', transition: 'transform 0.2s' }}>
                                             {medal.icon_url}
                                         </div>
-                                        <div className="text-[10px] text-gray-500 w-16 truncate">{medal.name}</div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', width: '64px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {medal.name}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    <Link to="/ranking" className="block mt-4 text-center text-sm text-gold hover:text-yellow-400 transition-colors">
+                    <Link to="/ranking" style={{
+                        display: 'block',
+                        marginTop: '1rem',
+                        textAlign: 'center',
+                        fontSize: '14px',
+                        color: 'var(--gold)',
+                        textDecoration: 'none'
+                    }}>
                         Ver Ranking Global →
                     </Link>
-                </div>
+                </FormCard>
 
                 {/* Edit Form */}
                 {isEditing && (
