@@ -299,7 +299,7 @@ const Profile = () => {
             </div>
 
             {/* GAMIFICATION STATS - NEW PHASE 3 */}
-            <div className="bg-gradient-to-r from-gray-900 to-black rounded-xl p-4 mb-6 border border-glass-border shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-900 to-black rounded-xl p-6 mb-6 border border-glass-border shadow-lg relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-2 opacity-20 text-6xl">🏆</div>
 
                 <div className="flex justify-between items-end mb-2 relative z-10">
