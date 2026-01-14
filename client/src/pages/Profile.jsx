@@ -88,10 +88,10 @@ const Profile = () => {
     const fetchHistory = async () => {
         try {
             const { data, error } = await supabase
-                .from('participacoes')
+                .from('confirmations')
                 .select(`
                     *,
-                    eventos (
+                    eventos:evento_id (
                         id,
                         nome,
                         data,
@@ -99,6 +99,7 @@ const Profile = () => {
                     )
                 `)
                 .eq('user_id', user.id)
+                .eq('status', 'confirmed')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
