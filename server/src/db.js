@@ -268,7 +268,8 @@ const db = {
     },
     // Admin: Get pending photos
     getPendingPhotos: async () => {
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('event_photos')
         .select(`
           *,
@@ -282,7 +283,8 @@ const db = {
     },
     // Admin: Moderate photo
     moderatePhoto: async (photoId, status) => {
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('event_photos')
         .update({ status })
         .eq('id', photoId)
