@@ -299,38 +299,39 @@ const Profile = () => {
             </div>
 
             {/* GAMIFICATION STATS - NEW PHASE 3 */}
-            <div className="bg-gradient-to-b from-gray-900 to-black rounded-xl border border-glass-border shadow-lg p-6 mb-6 text-center">
-                <div className="flex flex-col items-center justify-center">
+            <div className="bg-gradient-to-r from-[#1a1c20] to-black rounded-xl border border-glass-border shadow-lg p-5 mb-6">
+                <div className="flex items-center gap-5">
 
-                    {/* Level Badge */}
-                    <div className="mb-4">
-                        <div className="w-20 h-20 rounded-full border-4 border-gold/40 flex items-center justify-center bg-black shadow-[0_0_15px_rgba(255,215,0,0.1)]">
-                            <div className="text-center">
-                                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">LEVEL</div>
-                                <div className="text-3xl font-oxanium font-bold text-white">{profileData.level || 1}</div>
+                    {/* Left: Level Badge (Fixed Width) */}
+                    <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full border-2 border-gold flex items-center justify-center bg-black/50 shadow-[0_0_10px_rgba(255,215,0,0.2)]">
+                            <div className="text-center leading-tight">
+                                <div className="text-[9px] text-gray-500 font-bold uppercase">LEVEL</div>
+                                <div className="text-2xl font-oxanium font-bold text-white">{profileData.level || 1}</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Info */}
-                    <h3 className="text-lg font-bold text-gold uppercase tracking-wider mb-2">Progresso da Temporada</h3>
-
-                    <div className="w-full max-w-[300px] mb-2">
-                        <div className="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>{profileData.xp || 0} XP</span>
-                            <span>{(profileData.level || 1) * 1000} XP</span>
+                    {/* Right: Progress Info (Flexible) */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-baseline mb-1">
+                            <h3 className="text-base font-bold text-white uppercase tracking-wide truncate pr-2">Sua Jornada</h3>
+                            <span className="text-xs text-gold font-bold whitespace-nowrap">{profileData.xp || 0} / {(profileData.level || 1) * 1000} XP</span>
                         </div>
-                        <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+
+                        {/* Progress Bar */}
+                        <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden mb-2">
                             <div
-                                className="h-full bg-gold"
+                                className="h-full bg-gradient-to-r from-gold to-yellow-600"
                                 style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
                             ></div>
                         </div>
+
+                        <div className="text-[10px] text-gray-400 text-right">
+                            Próximo nível em <span className="text-gray-300 font-semibold">{(1000 - ((profileData.xp || 0) % 1000))} XP</span>
+                        </div>
                     </div>
 
-                    <div className="text-xs text-gray-500">
-                        Faltam <span className="text-white font-bold">{(1000 - ((profileData.xp || 0) % 1000))} XP</span> para o próximo nível
-                    </div>
                 </div>
 
                 {/* Medals Grid */}
@@ -369,48 +370,50 @@ const Profile = () => {
             </div>
 
             {/* Edit Form */}
-            {isEditing && (
-                <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
-                    <div className="edit-form-grid">
-                        <Input
-                            label="Nome Completo"
-                            value={editData.nome}
-                            onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
-                            icon="👤"
-                        />
-                        <Input
-                            label="Telefone"
-                            value={editData.telefone}
-                            onChange={handlePhoneChange}
-                            icon="📱"
-                            placeholder="(11) 99999-9999"
-                            maxLength={15}
-                        />
-                        <Input
-                            label="Data de Nascimento"
-                            type="date"
-                            value={editData.data_nascimento}
-                            onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
-                            icon="📅"
-                        />
-                        <Input
-                            label="Tipo Sanguíneo"
-                            value={editData.tipo_sanguineo}
-                            onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
-                            icon="🩸"
-                            placeholder="Ex: O+"
-                            maxLength={3}
-                        />
-                        <Input
-                            label="Moto Atual"
-                            value={editData.moto_atual}
-                            onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
-                            icon="🏍️"
-                            placeholder="Ex: Honda CB 500X"
-                        />
-                    </div>
-                </FormCard>
-            )}
+            {
+                isEditing && (
+                    <FormCard title="Editar Informações" className="mb-6" maxWidth={900} centered={false}>
+                        <div className="edit-form-grid">
+                            <Input
+                                label="Nome Completo"
+                                value={editData.nome}
+                                onChange={(e) => setEditData({ ...editData, nome: e.target.value })}
+                                icon="👤"
+                            />
+                            <Input
+                                label="Telefone"
+                                value={editData.telefone}
+                                onChange={handlePhoneChange}
+                                icon="📱"
+                                placeholder="(11) 99999-9999"
+                                maxLength={15}
+                            />
+                            <Input
+                                label="Data de Nascimento"
+                                type="date"
+                                value={editData.data_nascimento}
+                                onChange={(e) => setEditData({ ...editData, data_nascimento: e.target.value })}
+                                icon="📅"
+                            />
+                            <Input
+                                label="Tipo Sanguíneo"
+                                value={editData.tipo_sanguineo}
+                                onChange={(e) => setEditData({ ...editData, tipo_sanguineo: e.target.value })}
+                                icon="🩸"
+                                placeholder="Ex: O+"
+                                maxLength={3}
+                            />
+                            <Input
+                                label="Moto Atual"
+                                value={editData.moto_atual}
+                                onChange={(e) => setEditData({ ...editData, moto_atual: e.target.value })}
+                                icon="🏍️"
+                                placeholder="Ex: Honda CB 500X"
+                            />
+                        </div>
+                    </FormCard>
+                )
+            }
 
             {/* Stats Grid */}
             <div className="stats-grid">
@@ -469,7 +472,7 @@ const Profile = () => {
                     </div>
                 )}
             </FormCard>
-        </div>
+        </div >
     );
 };
 
