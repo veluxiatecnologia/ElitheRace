@@ -233,7 +233,9 @@ const db = {
   gallery: {
     // Photos
     createPhoto: async (photo) => {
-      const { data, error } = await supabase
+      // Use Admin client if available to bypass RLS (since backend is trusted)
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('event_photos')
         .insert(photo)
         .select('*, profiles(nome, avatar_url)')

@@ -81,7 +81,11 @@ router.get('/events/:eventId/photos', async (req, res) => {
         res.json(photos);
     } catch (error) {
         console.error('Error fetching photos:', error);
-        res.status(500).json({ error: 'Erro ao carregar fotos' });
+        res.status(500).json({
+            error: 'Erro ao carregar fotos',
+            details: error.message,
+            hint: error.hint
+        });
     }
 });
 
@@ -109,7 +113,11 @@ router.post('/events/:eventId/photos', async (req, res) => {
         res.status(201).json(photo);
     } catch (error) {
         console.error('Error adding photo:', error);
-        res.status(500).json({ error: 'Erro ao salvar foto' });
+        res.status(500).json({
+            error: 'Erro ao salvar metadados da foto',
+            details: error.message,
+            hint: error.hint
+        });
     }
 });
 
