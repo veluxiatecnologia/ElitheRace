@@ -50,7 +50,7 @@ const Profile = () => {
     const fetchProfileData = async () => {
         try {
             const { data, error } = await supabase
-                .from('users')
+                .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();
@@ -176,7 +176,7 @@ const Profile = () => {
         setSaving(true);
         try {
             const { error } = await supabase
-                .from('users')
+                .from('profiles')
                 .update({
                     nome: editData.nome,
                     telefone: editData.telefone,
@@ -233,7 +233,7 @@ const Profile = () => {
                 .getPublicUrl(filePath);
 
             const { error: updateError } = await supabase
-                .from('users')
+                .from('profiles')
                 .update({ avatar_url: publicUrl })
                 .eq('id', user.id);
 
