@@ -12,7 +12,7 @@ const Ranking = () => {
     const [ranking, setRanking] = useState([]);
     const [medals, setMedals] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('leaderboard'); // 'leaderboard' or 'medals'
+    const [activeTab, setActiveTab] = useState('leaderboard');
 
     useEffect(() => {
         fetchData();
@@ -45,7 +45,7 @@ const Ranking = () => {
         }
     };
 
-    if (loading) return <div className="p-8 flex justify-center"><LoadingSpinner /></div>;
+    if (loading) return <div style={{ padding: '2rem', display: 'flex', justifyContent: 'center' }}><LoadingSpinner /></div>;
 
     const getMedalIcon = (rank) => {
         if (rank === 0) return '🥇';
@@ -54,82 +54,157 @@ const Ranking = () => {
         return `#${rank + 1}`;
     };
 
-    const getLevelBadge = (level) => {
-        if (level >= 10) return '👑 Lenda';
-        if (level >= 5) return '🎖️ Veterano';
-        return `Nível ${level}`;
-    };
-
     return (
-        <div className="min-h-screen bg-carbon-dark text-white pb-20">
+        <div style={{ minHeight: '100vh', background: 'var(--carbon-dark)', color: 'white', paddingBottom: '5rem' }}>
             {/* Header */}
-            <div className="p-4 border-b border-glass-border sticky top-0 bg-carbon-dark/95 backdrop-blur z-10 flex items-center justify-between">
+            <div style={{
+                padding: '1rem',
+                borderBottom: '1px solid var(--glass-border)',
+                position: 'sticky',
+                top: 0,
+                background: 'rgba(17, 17, 17, 0.95)',
+                backdropFilter: 'blur(10px)',
+                zIndex: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }}>
                 <Button variant="text" onClick={() => navigate('/')} icon="←">
                     Voltar
                 </Button>
-                <h1 className="text-xl font-oxanium font-bold text-gold uppercase tracking-wider">
+                <h1 style={{
+                    fontSize: '1.25rem',
+                    fontWeight: 'bold',
+                    color: 'var(--gold)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em'
+                }}>
                     Ranking Elithe
                 </h1>
-                <div className="w-10"></div> {/* Spacer */}
+                <div style={{ width: '40px' }}></div>
             </div>
 
             {/* Tabs */}
-            <div className="flex p-4 gap-2">
+            <div style={{ display: 'flex', padding: '1rem', gap: '0.5rem' }}>
                 <button
                     onClick={() => setActiveTab('leaderboard')}
-                    className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'leaderboard' ? 'bg-gold text-black shadow-gold-glow' : 'bg-carbon-lighter text-gray-400'
-                        }`}
+                    style={{
+                        flex: 1,
+                        padding: '0.75rem',
+                        borderRadius: '12px',
+                        fontWeight: 'bold',
+                        transition: 'all 0.2s',
+                        background: activeTab === 'leaderboard' ? 'var(--gold)' : 'var(--carbon-lighter)',
+                        color: activeTab === 'leaderboard' ? 'black' : 'var(--text-muted)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: activeTab === 'leaderboard' ? '0 0 20px rgba(212,175,55,0.4)' : 'none'
+                    }}
                 >
                     🏆 Ranking
                 </button>
                 <button
                     onClick={() => setActiveTab('medals')}
-                    className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'medals' ? 'bg-gold text-black shadow-gold-glow' : 'bg-carbon-lighter text-gray-400'
-                        }`}
+                    style={{
+                        flex: 1,
+                        padding: '0.75rem',
+                        borderRadius: '12px',
+                        fontWeight: 'bold',
+                        transition: 'all 0.2s',
+                        background: activeTab === 'medals' ? 'var(--gold)' : 'var(--carbon-lighter)',
+                        color: activeTab === 'medals' ? 'black' : 'var(--text-muted)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        boxShadow: activeTab === 'medals' ? '0 0 20px rgba(212,175,55,0.4)' : 'none'
+                    }}
                 >
                     🎖️ Medalhas
                 </button>
             </div>
 
             {/* Content */}
-            <div className="px-4 space-y-4">
+            <div style={{ padding: '0 1rem' }}>
                 {activeTab === 'leaderboard' ? (
-                    <div className="space-y-3">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {ranking.map((player, index) => (
                             <div
                                 key={player.id}
-                                className={`flex items-center p-3 rounded-xl border ${player.id === user.id
-                                    ? 'bg-gold/10 border-gold shadow-[0_0_15px_rgba(255,215,0,0.2)] transform scale-[1.02]'
-                                    : 'bg-carbon-lighter border-glass-border'
-                                    }`}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0.75rem',
+                                    borderRadius: '12px',
+                                    border: player.id === user.id ? '1px solid var(--gold)' : '1px solid var(--glass-border)',
+                                    background: player.id === user.id ? 'rgba(212,175,55,0.1)' : 'var(--carbon-lighter)',
+                                    boxShadow: player.id === user.id ? '0 0 15px rgba(212,175,55,0.2)' : 'none',
+                                    transform: player.id === user.id ? 'scale(1.02)' : 'scale(1)'
+                                }}
                             >
-                                <div className={`w-10 h-10 flex items-center justify-center font-bold text-lg rounded-full shrink-0 mr-3 ${index < 3 ? 'text-2xl shadow-text' : 'text-gray-400 bg-black/30'
-                                    }`}>
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 'bold',
+                                    fontSize: index < 3 ? '1.5rem' : '1rem',
+                                    borderRadius: '50%',
+                                    flexShrink: 0,
+                                    marginRight: '0.75rem',
+                                    background: index >= 3 ? 'rgba(0,0,0,0.3)' : 'transparent',
+                                    color: index >= 3 ? 'var(--text-muted)' : 'inherit'
+                                }}>
                                     {getMedalIcon(index)}
                                 </div>
 
-                                <div className="relative shrink-0">
+                                <div style={{ position: 'relative', flexShrink: 0 }}>
                                     <img
                                         src={player.avatar_url || `https://ui-avatars.com/api/?name=${player.nome}&background=random`}
                                         alt={player.nome}
-                                        className="w-12 h-12 rounded-full object-cover border-2 border-carbon"
+                                        style={{
+                                            width: '48px',
+                                            height: '48px',
+                                            borderRadius: '50%',
+                                            objectFit: 'cover',
+                                            border: '2px solid var(--carbon)'
+                                        }}
                                     />
-                                    <div className="absolute -bottom-1 -right-1 bg-black text-[10px] px-1.5 py-0.5 rounded border border-gray-700 font-bold">
+                                    <div style={{
+                                        position: 'absolute',
+                                        bottom: '-4px',
+                                        right: '-4px',
+                                        background: 'black',
+                                        fontSize: '10px',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                        border: '1px solid var(--glass-border)',
+                                        fontWeight: 'bold'
+                                    }}>
                                         LVL {player.level || 1}
                                     </div>
                                 </div>
 
-                                <div className="ml-3 flex-1 min-w-0">
-                                    <h3 className={`font-bold truncate ${player.id === user.id ? 'text-gold' : 'text-white'}`}>
+                                <div style={{ marginLeft: '0.75rem', flex: 1, minWidth: 0 }}>
+                                    <h3 style={{
+                                        fontWeight: 'bold',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        color: player.id === user.id ? 'var(--gold)' : 'white'
+                                    }}>
                                         {player.nome}
                                     </h3>
-                                    <p className="text-xs text-gray-400">
+                                    <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                         {player.checkins_count || 0} Eventos
                                     </p>
                                 </div>
 
-                                <div className="text-right shrink-0">
-                                    <div className="text-gold font-oxanium font-bold text-lg">
+                                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                    <div style={{
+                                        color: 'var(--gold)',
+                                        fontWeight: 'bold',
+                                        fontSize: '1.125rem'
+                                    }}>
                                         {player.xp || 0} XP
                                     </div>
                                 </div>
@@ -137,17 +212,54 @@ const Ranking = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gap: '0.75rem'
+                    }}>
                         {medals.map(medal => (
-                            <div key={medal.id} className="bg-carbon-lighter border border-glass-border rounded-xl p-4 flex flex-col items-center text-center">
-                                <div className="text-4xl mb-2 filter drop-shadow-md">
+                            <div key={medal.id} style={{
+                                background: 'var(--carbon-lighter)',
+                                border: '1px solid var(--glass-border)',
+                                borderRadius: '12px',
+                                padding: '1rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{
+                                    fontSize: '2.5rem',
+                                    marginBottom: '0.5rem',
+                                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))'
+                                }}>
                                     {medal.icon_url}
                                 </div>
-                                <h3 className="font-bold text-gold text-sm mb-1">{medal.name}</h3>
-                                <p className="text-xs text-gray-400 leading-tight mb-2 min-h-[2.5em]">
+                                <h3 style={{
+                                    fontWeight: 'bold',
+                                    color: 'var(--gold)',
+                                    fontSize: '0.875rem',
+                                    marginBottom: '0.25rem'
+                                }}>
+                                    {medal.name}
+                                </h3>
+                                <p style={{
+                                    fontSize: '12px',
+                                    color: 'var(--text-muted)',
+                                    lineHeight: '1.3',
+                                    marginBottom: '0.5rem',
+                                    minHeight: '2.5em'
+                                }}>
                                     {medal.description}
                                 </p>
-                                <span className="text-[10px] bg-black/30 px-2 py-1 rounded text-green-400 font-mono">
+                                <span style={{
+                                    fontSize: '10px',
+                                    background: 'rgba(0,0,0,0.3)',
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    color: '#4ade80',
+                                    fontFamily: 'monospace'
+                                }}>
                                     +{medal.xp_reward} XP
                                 </span>
                             </div>
@@ -156,7 +268,7 @@ const Ranking = () => {
                 )}
             </div>
 
-            <div className="h-4"></div>
+            <div style={{ height: '1rem' }}></div>
         </div>
     );
 };
