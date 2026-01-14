@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +8,6 @@ import { API_URL } from '../config/api';
 
 const Ranking = () => {
     const { user, session } = useAuth();
-    const { theme } = useTheme();
     const navigate = useNavigate();
     const [ranking, setRanking] = useState([]);
     const [medals, setMedals] = useState([]);
