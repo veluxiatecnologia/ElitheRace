@@ -37,6 +37,9 @@ const allowedOrigins = [
     /\.vercel\.app$/
 ].filter(Boolean);
 
+// Trust proxy - Required for Railway/Heroku deployments
+app.set('trust proxy', true);
+
 app.use(cors({
     origin: allowedOrigins,
     credentials: true
