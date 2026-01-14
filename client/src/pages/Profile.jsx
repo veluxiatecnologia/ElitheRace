@@ -305,25 +305,27 @@ const Profile = () => {
             >
                 <div className="absolute top-0 right-0 p-2 opacity-20 text-6xl">🏆</div>
 
-                <div className="flex justify-between items-end mb-2 relative z-10">
-                    <div>
-                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">NÍVEL ATUAL</span>
-                        <div className="text-3xl font-oxanium font-bold text-white leading-none mt-1">
-                            Level {profileData.level || 1}
+                <div style={{ maxWidth: '85%', margin: '0 auto', position: 'relative', zIndex: 10 }}>
+                    <div className="flex justify-between items-end mb-2">
+                        <div>
+                            <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">NÍVEL ATUAL</span>
+                            <div className="text-3xl font-oxanium font-bold text-white leading-none mt-1">
+                                Level {profileData.level || 1}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-gold font-bold text-xl">{profileData.xp || 0} XP</div>
+                            <div className="text-xs text-gray-500">Próximo nível: {(profileData.level || 1) * 1000} XP</div>
                         </div>
                     </div>
-                    <div className="text-right">
-                        <div className="text-gold font-bold text-xl">{profileData.xp || 0} XP</div>
-                        <div className="text-xs text-gray-500">Próximo nível: {(profileData.level || 1) * 1000} XP</div>
-                    </div>
-                </div>
 
-                {/* XP Bar */}
-                <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden relative z-10">
-                    <div
-                        className="h-full bg-gradient-to-r from-gold to-yellow-500 transition-all duration-1000 ease-out"
-                        style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
-                    ></div>
+                    {/* XP Bar */}
+                    <div className="h-3 w-full bg-gray-800 rounded-full overflow-hidden mb-6">
+                        <div
+                            className="h-full bg-gradient-to-r from-gold to-yellow-500 transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.min(100, ((profileData.xp || 0) % 1000) / 10)}%` }}
+                        ></div>
+                    </div>
                 </div>
 
                 {/* Medals Grid */}
