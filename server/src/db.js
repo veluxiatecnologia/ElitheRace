@@ -309,12 +309,13 @@ const db = {
         .eq('user_id', userId)
         .single();
 
+      const client = supabaseAdmin || supabase;
       if (existing) {
-        const { error } = await supabase.from('likes').delete().eq('id', existing.id);
+        const { error } = await client.from('likes').delete().eq('id', existing.id);
         if (error) throw error;
         return { liked: false };
       } else {
-        const { error } = await supabase.from('likes').insert({ photo_id: photoId, user_id: userId });
+        const { error } = await client.from('likes').insert({ photo_id: photoId, user_id: userId });
         if (error) throw error;
         return { liked: true };
       }
@@ -322,7 +323,8 @@ const db = {
 
     // Comments
     addComment: async (comment) => {
-      const { data, error } = await supabase
+      const client = supabaseAdmin || supabase;
+      const { data, error } = await client
         .from('comments')
         .insert(comment)
         .select('*, profiles(nome, avatar_url)')
