@@ -636,7 +636,7 @@ const AdminDashboard = () => {
                                         className="hidden"
                                     />
                                 </label>
-                                <p className="text-xs text-gray-500 mt-2">Recomendado: 1920x1080px (JPG, PNG)</p>
+                                <p className="text-xs text-gray-500 mt-2">Recomendado: 1920x1080px (Centralize o conteúdo principal)</p>
                                 {bannerFile && <p className="text-xs text-green-500 mt-1">Arquivo selecionado: {bannerFile.name}</p>}
                             </div>
                         </div>
