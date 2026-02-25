@@ -307,12 +307,14 @@ const Home = () => {
                                     </select>
                                 </div>
 
+                                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>
+                                    ℹ️ Informar a moto é opcional. Preencha apenas se desejar.
+                                </p>
                                 <Input
-                                    label="Moto que usará"
+                                    label="Moto que usará (opcional)"
                                     value={moto}
                                     onChange={(e) => setMoto(e.target.value)}
                                     icon="🏍️"
-                                    required
                                     placeholder="Ex: Honda CB 500X"
                                 />
 

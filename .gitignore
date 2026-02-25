@@ -6,6 +6,18 @@ package-lock.json
 .env
 .env.local
 .env.production
+.env.development
+.env.staging
+.env*.local
+
+# AI Agent config
+.agent/
+
+# Test coverage
+coverage/
+
+# Vite cache
+.vite/
 
 # Database
 *.db

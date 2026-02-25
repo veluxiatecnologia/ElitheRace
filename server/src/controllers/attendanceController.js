@@ -25,8 +25,8 @@ exports.confirmAttendance = async (req, res) => {
     const userId = req.user.id;
     const { moto_dia, pe_escolhido } = req.body;
 
-    if (!moto_dia || !pe_escolhido) {
-        return res.status(400).json({ error: 'Moto and PE are required' });
+    if (!pe_escolhido) {
+        return res.status(400).json({ error: 'Ponto de Encontro é obrigatório' });
     }
 
     try {
@@ -46,11 +46,13 @@ exports.confirmAttendance = async (req, res) => {
 
         // 3. Logic Checks
         let nova_moto = false;
-        if (user.moto_atual && user.moto_atual.trim().toLowerCase() !== moto_dia.trim().toLowerCase()) {
-            nova_moto = true;
-            await db.users.update(userId, { moto_atual: moto_dia });
-        } else if (!user.moto_atual) {
-            await db.users.update(userId, { moto_atual: moto_dia });
+        if (moto_dia && moto_dia.trim()) {
+            if (user.moto_atual && user.moto_atual.trim().toLowerCase() !== moto_dia.trim().toLowerCase()) {
+                nova_moto = true;
+                await db.users.update(userId, { moto_atual: moto_dia });
+            } else if (!user.moto_atual) {
+                await db.users.update(userId, { moto_atual: moto_dia });
+            }
         }
 
         // Check birthday if user has data_nascimento (might be null in Supabase profile initially)
@@ -66,7 +68,7 @@ exports.confirmAttendance = async (req, res) => {
         const confirmation = await db.confirmations.create({
             evento_id: Number(eventId),
             usuario_id: userId, // UUID
-            moto_dia,
+            moto_dia: moto_dia || '',
             pe_escolhido,
             nova_moto,
             aniversariante_semana: aniversariante,
