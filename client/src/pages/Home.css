@@ -16,14 +16,16 @@
     overflow: hidden;
     margin-bottom: var(--spacing-xl);
     box-shadow: var(--shadow-xl);
-    height: 450px;
+    background: var(--color-carbon-lighter);
     animation: fadeIn var(--transition-base);
 }
 
 .home-hero-image {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
+    max-height: 600px;
+    object-fit: contain;
     transition: transform var(--transition-slow);
 }
 
@@ -234,8 +236,8 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .home-hero {
-        height: 280px;
+    .home-hero-image {
+        max-height: 250px;
     }
 
     .home-hero-title {
